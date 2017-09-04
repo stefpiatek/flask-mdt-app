@@ -1,0 +1,11 @@
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% include "case_list.html" %}
+     <br>
+     <div class="jumbotron">
+        <div class="container">
+            <h3> Add a new case</h3>
+
+            {{ wtf.quick_form(form, form_type="horizontal", horizontal_columns=('lg',3,4)) }}
+         </div>
+     </div>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends "base.html" %}
+
+{% block page_content %}
+ <div class="col-lg-8">
+     <div class="table-responsive">
+            <table id="unsorted" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Hospital number</th>
+                            <th>First name</th>
+                            <th>Last name</th>
+							<th>Date of birth</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for patient in patients %}
+                        <tr>
+                            <td> <a href="{{  url_for('main.patient_edit', pk=patient.id)}}">{{patient.hospital_number}} </a>                    </td>
+                            <td> {{ patient.first_name }} </td>
+                            <td> {{ patient.last_name }} </td>
+							<td> {{ patient.date_of_birth }} </td>
+                           <td><a target="_blank" href="{{  url_for('main.case_create', patient_id=patient.id)}}" class="btn btn-default" role="button">Add a case</a></td>
+                        </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+             </div>
+          </div>
+        <!-- panel-body-->
+        </div>
+     </div>
+  </div>
+{% endblock %}

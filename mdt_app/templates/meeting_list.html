@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends "base.html" %}
+
+{% block page_content %}
+ <div class="col-lg-8">
+     <div class="table-responsive">
+            <table id="datatable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Meeting Date</th>
+                            <th>Comment</th>
+                            <th>Is cancelled?</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for meeting in meetings %}
+                        <tr>
+                            <td><a href="{{  url_for('main.meeting_edit', pk=meeting.id)}}">{{meeting.date}} </a></td>
+                            <td> {{meeting.comment}} </td>
+                            <td>
+                            {% if meeting.is_cancelled == True %}
+                               Yes
+                            {%  else %}
+                               No
+                            {%  endif %}
+                              </td>
+                           <td><a href="{{  url_for('main.case_list', meeting=meeting.date)}}" class="btn btn-default" role="button">View cases</a></td>
+                        </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+             </div>
+          </div>
+        <!-- panel-body-->
+        </div>
+     </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/fixes.html" as fixes %}
+
+{% block title %}MDT - {{ title }} {% endblock %}
+
+{% block head %}
+{{ super() }}
+{{fixes.ie8()}}
+<link rel="shortcut icon" href="{{ url_for('static', filename ='favicon.ico') }}"
+     type="image/x-icon">
+<link rel="icon" href="{{ url_for('static', filename = 'favicon.ico') }}"
+     type="image/x-icon">
+
+{% endblock %}
+
+
+{% block styles %}
+{{ super() }}
+<style>
+.required {font-weight: bold;
+  color: #005EB8; }
+body { padding-top: 60px; }
+</style>
+<link rel="stylesheet" type="text/css"
+      href="{{url_for('static', filename='datatables.min.css')}}"/>
+{% endblock %}
+
+
+{% block navbar %}
+<div class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+          <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                  <span class="sr-only">Toggle navigation</span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="{{ url_for('main.index') }}">MDT</a>
+          </div>
+          <div class="collapse navbar-collapse">
+            <ul class="nav nav-pills navbar-static-top">
+                <li><a href="{{ url_for('main.case_list') }}">All cases</a></li>
+              <li class="dropdown">
+              <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Meetings <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="{{ url_for('main.meeting_list') }}">View Meetings</a></li>
+                <li><a href="{{ url_for('main.meeting_create') }}">Add a Meeting</a></li>
+              </ul></li>
+              <li class="dropdown">
+              <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Patients <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="{{ url_for('main.patient_list') }}">View Patients</a></li>
+                <li><a href="{{ url_for('main.patient_create') }}">Add a Patient</a></li>
+              </ul></li>
+              <li><a href="#">View my actions</a></li>
+                {% if current_user.is_authenticated %}
+                <li class = "navbar-right"><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+                <li class="navbar-text navbar-right">Welcome {{ current_user.username }}</li>
+                {% else %}
+                <li class = "navbar-right"><a href="{{ url_for('auth.login') }}">Login</a></li>
+                {% endif %}
+             </ul>
+          </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span12">
+      <div class="page-header">
+        <h1> {{ title }} </h1>
+      </div>
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <ul>
+          {% for message in messages %}
+            <li>{{ message }} </li>
+           {% endfor %}
+          </ul>
+          {% endif %}
+        {% endwith %}
+      </div>
+   </div>
+   {% block page_content %}{% endblock %}
+</div>
+    {% endblock %}
+
+
+
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript" src="{{url_for('static', filename='datatables.min.js')}}"></script>
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function(){
+            $('#datatable').dataTable({
+                    "paging": false,
+                    "order": [0, "desc"]
+            });
+    });
+    $(document).ready(function(){
+            $('#unsorted').dataTable({
+                    "iDisplayLength": 25,
+                    "aaSorting": []
+            });
+    });
+</script>
+{% endblock %}

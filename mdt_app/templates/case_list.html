@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% extends "base.html" %}
+
+{% block page_content %}
+         <div class="container-fluid">
+            <table id="datatable" class="table table-striped" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Meeting Date</th>
+                            <th>Added by</th>
+                            {% if not form %}
+                            <th>Patient</th>
+                            {% endif %}
+                            <th>Consultant</th>
+                            <th>VCMG/MDT</th>
+                            <th>Outcome</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for case in cases %}
+                        <tr>
+                            <td> {{case.meeting}} </td>
+                            <td> {{case.created_by.username}} </td>
+                            {% if not form %}
+                            <td> <a href="{{  url_for('main.case_create', patient_id=case.patient_id)}}">{{case.patient.hospital_number}} {{case.patient.first_name}} {{case.patient.last_name}}</a></td>
+                            {% endif %}
+                            <td> {{case.consultant.username}} </td>
+                            <td> {{case.mdt_vcmg}} </td>
+                            <td> {{case.outcome}} </td>
+                            <td> {{case.status}} </td>
+                        </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+     </div>
+{% endblock %}
