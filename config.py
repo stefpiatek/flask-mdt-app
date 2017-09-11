@@ -18,6 +18,7 @@ class DevelopmentConfig(Config):
     DEBUG = True
     TESTING = False
     DEBUG_TB_INTERCEPT_REDIRECTS = False
+    DEBUG_TB_HOSTS = ('127.0.0.1')
     SQLALCHEMY_DATABASE_URI = (os.environ.get('TEST_DATABASE_URL') or
                                POSTGRES_CONNECTION + 'mdt_dev')
 

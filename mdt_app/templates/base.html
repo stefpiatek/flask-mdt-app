@@ -18,8 +18,12 @@
 {{ super() }}
 <style>
 .required {font-weight: bold;
-  color: #005EB8; }
+  color: #072c65; }
 body { padding-top: 60px; }
+td.whitespace {
+ white-space: pre-wrap;
+}
+
 </style>
 <link rel="stylesheet" type="text/css"
       href="{{url_for('static', filename='datatables.min.css')}}"/>
@@ -28,7 +32,7 @@ body { padding-top: 60px; }
 
 {% block navbar %}
 <div class="navbar navbar-default navbar-fixed-top">
-    <div class="container-fluid">
+    <div class="container-fixed">
           <div class="navbar-header">
               <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                   <span class="sr-only">Toggle navigation</span>
@@ -53,10 +57,16 @@ body { padding-top: 60px; }
                 <li><a href="{{ url_for('main.patient_list') }}">View Patients</a></li>
                 <li><a href="{{ url_for('main.patient_create') }}">Add a Patient</a></li>
               </ul></li>
-              <li><a href="#">View my actions</a></li>
+              <li><a href="{{ url_for('main.action_list', user_id=current_user.id) }}">View my actions</a></li>
                 {% if current_user.is_authenticated %}
                 <li class = "navbar-right"><a href="{{ url_for('auth.logout') }}">Logout</a></li>
                 <li class="navbar-text navbar-right">Welcome {{ current_user.username }}</li>
+                <li class = "navbar-right dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="{{ url_for('auth.reset_password') }}">Reset passwords</a></li>
+                <li><a target="_blank" href="/admin">Admin site</a></li>
+              </ul></li>
                 {% else %}
                 <li class = "navbar-right"><a href="{{ url_for('auth.login') }}">Login</a></li>
                 {% endif %}
@@ -74,14 +84,30 @@ body { padding-top: 60px; }
         <h1> {{ title }} </h1>
       </div>
       {% with messages = get_flashed_messages() %}
-        {% if messages %}
-          <ul>
-          {% for message in messages %}
-            <li>{{ message }} </li>
-           {% endfor %}
-          </ul>
-          {% endif %}
-        {% endwith %}
+          {% if messages %}
+          <ul>{% for message in messages %}
+                  <li>{{ message }} </li>
+          {% endfor %}</ul>
+              <!-- Modal
+              <div id="openModal" class="modal fade" role="dialog">
+                  <div class="modal-dialog">
+                  <div class="modal-content">
+                      <div class="modal-body">
+                          <ul>
+                              {% for message in messages %}
+                                  <li>{{ message }} </li>
+                             {% endfor %}
+                          </ul>
+                      </div>
+                      <div class="modal-footer">
+                          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                     </div>
+                  </div>
+              </div>
+          </div> -->
+
+      {% endif %}
+      {% endwith %}
       </div>
    </div>
    {% block page_content %}{% endblock %}
@@ -95,16 +121,22 @@ body { padding-top: 60px; }
 <script type="text/javascript" src="{{url_for('static', filename='datatables.min.js')}}"></script>
 <script type="text/javascript" charset="utf-8">
     $(document).ready(function(){
-            $('#datatable').dataTable({
-                    "paging": false,
-                    "order": [0, "desc"]
-            });
+        $('#datatable').dataTable({
+                "paging": false,
+                "order": [0, "desc"]
+        });
     });
     $(document).ready(function(){
-            $('#unsorted').dataTable({
-                    "iDisplayLength": 25,
-                    "aaSorting": []
-            });
+        $('#unsorted').dataTable({
+                "iDisplayLength": 25,
+                "aaSorting": []
+        });
+    });
+    jQuery(document).ready(function(){
+        $('#openModal').modal({
+            keyboard: true,
+            show : true
+        });
     });
 </script>
 {% endblock %}

@@ -1,20 +1,15 @@
+{% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
-
-{% include "case_list.html" %}
+{% block page_content %}
      <br>
      <div class="panel panel-default">
-            <div class="panel-heading"><h3>Add a new case</h3></div>
+            <div class="panel-heading"><h3>Edit Action</h3></div>
             <div class="panel-body">
             {{ wtf.quick_form(form, form_type="horizontal",
                horizontal_columns=('lg',2,4)) }}
             <br>
-            <t1> Dates are in the format YYYY-MM-DD.
-            <br>For example:
-                <ul>
-                    <li> 2016-04-21 </li>
-                </ul>
-            </t1>
             </div>
      </div>
 
+{% endblock %}
 

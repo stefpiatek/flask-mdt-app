@@ -7,17 +7,22 @@
      <div class="table-responsive">
             <table id="datatable" class="table table-striped">
                     <thead>
-                        <tr>
-                            <th>Meeting Date</th>
-                            <th>Comment</th>
-                            <th>Is cancelled?</th>
-                            <th></th>
-                        </tr>
+                    <tr>
+                        <th>Edit meeting</th>
+                        <th></th>
+                        <th>Comment</th>
+                        <th>Is cancelled?</th>
+                    </tr>
                     </thead>
                     <tbody>
                     {% for meeting in meetings %}
-                        <tr>
-                            <td><a href="{{  url_for('main.meeting_edit', pk=meeting.id)}}">{{meeting.date}} </a></td>
+                        {% if meeting.is_cancelled == True %}
+                            <tr class="alert alert-danger">
+                        {% else %}
+                            <tr>
+                        {% endif %}
+                            <td><a href="{{  url_for('main.meeting_edit', pk=meeting.id)}}">{{meeting.date}}</a> </td>
+                            <td><a href="{{  url_for('main.case_list', meeting=meeting.date)}}" class="btn btn-default" role="button">View cases</a></td>
                             <td> {{meeting.comment}} </td>
                             <td>
                             {% if meeting.is_cancelled == True %}
@@ -26,7 +31,6 @@
                                No
                             {%  endif %}
                               </td>
-                           <td><a href="{{  url_for('main.case_list', meeting=meeting.date)}}" class="btn btn-default" role="button">View cases</a></td>
                         </tr>
                     {% endfor %}
                   </tbody>

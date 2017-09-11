@@ -1,6 +1,7 @@
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
 from wtforms import ValidationError
+from wtforms.ext.sqlalchemy.fields import QuerySelectField
 
 from flask_wtf import FlaskForm
 
@@ -35,9 +36,24 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('Username already in use.')
 
 
+def get_users():
+    return User.query.order_by(User.username)
+
+
 class ChangePasswordForm(FlaskForm):
     old_password = PasswordField('Old password', validators=[DataRequired()])
     password = PasswordField('New password', validators=[
         DataRequired(), EqualTo('password2', message='Passwords must match')])
-    password2 = PasswordField('Confirm new password', validators=[DataRequired()])
-    submit = SubmitField('Update Password')
+    password2 = PasswordField('Confirm new password',
+                              validators=[DataRequired()])
+    submit = SubmitField('Reset Password')
+
+class ResetPasswordForm(FlaskForm):
+    user = QuerySelectField('User', query_factory=get_users,
+                               get_label='username', blank_text='---',
+                               allow_blank=True, validators=[DataRequired()])
+    password = PasswordField('New password', validators=[
+        DataRequired(), EqualTo('password2', message='Passwords must match')])
+    password2 = PasswordField('Confirm new password',
+                              validators=[DataRequired()])
+    submit = SubmitField('Reset Password')

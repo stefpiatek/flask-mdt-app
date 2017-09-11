@@ -17,7 +17,6 @@ mail = Mail()
 admin = Admin(template_mode='bootstrap3')
 
 def create_app(config_name):
-    # create bootstrap templates
     app = Flask(__name__)
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
@@ -33,6 +32,7 @@ def create_app(config_name):
     admin.add_view(AdminModelView(Meeting, db.session))
     admin.add_view(AdminModelView(Case, db.session))
     admin.add_view(AdminModelView(Action, db.session))
+    admin.add_view(AdminModelView(Attendee, db.session))
 
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
@@ -54,4 +54,4 @@ class AdminModelView(ModelView):
 
 
 # placed at end to avoid circular argument
-from mdt_app.models import User, Case, Meeting, Action, Patient
+from mdt_app.models import User, Case, Meeting, Action, Patient, Attendee

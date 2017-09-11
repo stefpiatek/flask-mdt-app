@@ -5,8 +5,9 @@ from flask_login import login_user, logout_user, login_required, current_user
 from . import auth
 from .. import db
 from ..models import User
-from .forms import LoginForm, RegistrationForm, ChangePasswordForm
+from .forms import *
 from ..decorators import admin_required
+
 
 @auth.before_app_request
 def before_request():
@@ -54,16 +55,16 @@ def register():
                     password=form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash('Before you can use the site,' +
+        flash('Before you can use the site,'
               'your account must be verified by an administrator')
-        flash('please email asking for user {user} to be added'.format(
-            user= user.username ))
-        # TODO: fill in email address to send to automatically and change unconfirmed template?
+        flash(('please email the administrator '
+              'asking for your account ({user}) to be verified'
+               ).format(user=user.username))
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', form=form, title='Register')
 
 
-@auth.route('/change-password', methods=['GET', 'POST'])
+@auth.route('/change_password', methods=['GET', 'POST'])
 @login_required
 def change_password():
     form = ChangePasswordForm()
@@ -79,4 +80,19 @@ def change_password():
     return render_template("auth/change_password.html", form=form,
                            title='Change Password')
 
-# TODO: Add admin form for user administration
+
+@auth.route('/reset_password', methods=['GET', 'POST'])
+@admin_required
+@login_required
+def reset_password():
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(id=form.user.data.id).first()
+        user.password = form.password.data
+        db.session.add(user)
+        db.session.commit()
+        flash(('Temporary password for "{user}" is "{password}".'
+               ).format(user=user.username, password=form.password.data))
+        return redirect(url_for('main.index'))
+    return render_template("auth/change_password.html", form=form,
+                           title='Change Password')

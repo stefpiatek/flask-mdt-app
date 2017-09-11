@@ -6,23 +6,23 @@
  <div class="col-lg-8">
      <div class="table-responsive">
             <table id="unsorted" class="table table-striped">
-                    <thead>
+                   <thead>
                         <tr>
-                            <th>Hospital number</th>
+                            <th>Edit Action</th>
+                            <th></th>
                             <th>First name</th>
                             <th>Last name</th>
 							<th>Date of birth</th>
-                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                    {% for patient in patients %}
+                    {% for action in actions %}
                         <tr>
-                            <td> <a href="{{  url_for('main.patient_edit', pk=patient.id)}}">{{patient.hospital_number}} </a>                    </td>
+                            <td> <a href="{{  url_for('main.patient_edit', pk=patient.id)}}">{{patient.hospital_number}} </a> </td>
+                            <td><a target="_blank" href="{{  url_for('main.case_create', patient_id=patient.id)}}" class="btn btn-default" role="button">Add a case</a></td>
                             <td> {{ patient.first_name }} </td>
                             <td> {{ patient.last_name }} </td>
 							<td> {{ patient.date_of_birth }} </td>
-                           <td><a target="_blank" href="{{  url_for('main.case_create', patient_id=patient.id)}}" class="btn btn-default" role="button">Add a case</a></td>
                         </tr>
                     {% endfor %}
                   </tbody>

@@ -1,39 +1,91 @@
 <!DOCTYPE html>
-<html lang="en">
+<div lang="en">
 
 {% extends "base.html" %}
-
 {% block page_content %}
-         <div class="container-fluid">
-            <table id="datatable" class="table table-striped" width="100%" cellspacing="0">
-                    <thead>
-                        <tr>
-                            <th>Meeting Date</th>
-                            <th>Added by</th>
-                            {% if not form %}
-                            <th>Patient</th>
-                            {% endif %}
-                            <th>Consultant</th>
-                            <th>VCMG/MDT</th>
-                            <th>Outcome</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {% for case in cases %}
-                        <tr>
-                            <td> {{case.meeting}} </td>
-                            <td> {{case.created_by.username}} </td>
-                            {% if not form %}
-                            <td> <a href="{{  url_for('main.case_create', patient_id=case.patient_id)}}">{{case.patient.hospital_number}} {{case.patient.first_name}} {{case.patient.last_name}}</a></td>
-                            {% endif %}
-                            <td> {{case.consultant.username}} </td>
-                            <td> {{case.mdt_vcmg}} </td>
-                            <td> {{case.outcome}} </td>
-                            <td> {{case.status}} </td>
-                        </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-     </div>
+{% if attendee_form %}
+    {% include "_attendee_form.html" %}
+{% endif %}
+    {% if counts and cases %}
+        <div class="panel panel-default">
+            <div class="panel-heading"><h3>Progress</h3></div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="well col-sm-2">
+                        <strong>To be discussed: {{ counts.tbd }} / {{ cases|count }}</strong>
+                    </div><div class="col-sm-3"></div>
+                    <div class="well alert-warning col-sm-2">
+                        <strong>To be actioned: {{ counts.disc }} / {{ cases|count }} </strong>
+                    </div><div class="col-sm-3"></div>
+                    <div class="well alert-success col-sm-2">
+                        <strong>Complete: {{ counts.comp }} / {{ cases|count }}</strong>
+                    </div>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-info" role="progressbar"
+                         aria-valuenow="{{ counts.percent_discussed }}"
+                         aria-valuemin="0" aria-valuemax="100" style="width:{{ counts.percent_discussed }}%">
+                         {{ counts.percent_discussed }}% Discussed
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endif %}
+        <div class="panel panel-default">
+            <div class="panel-heading"><h3>Overview of cases</h3></div>
+            <div class="panel-body" style="overflow:scroll">
+                    <table id="datatable" class="table" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Meeting Date</th>
+                                    {% if not (form or counts) %}
+                                        <th> </th>
+                                    {% endif %}
+                                    <th>Added by</th>
+                                    {% if not form or form.patient_id %}
+                                    <th>Edit Case</th>
+                                    {% endif %}
+                                    <th>Consultant</th>
+                                    <th>Medical History</th>
+                                    <th>Question</th>
+                                    <th>Discussion</th>
+                                    <th>Actions by</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for case in cases %}
+                                {% if case.status == 'COMP' %}
+                                    <tr class="alert alert-success">
+                                {% elif case.status == 'DISC' %}
+                                    <tr class="alert alert-warning">
+                                {% else %}
+                                    <tr>
+                                {% endif %}
+                                    <td> <a href="{{ url_for('main.case_list', meeting=case.meeting.date)}}">
+                                         {{case.meeting.date}} </a></td>
+                                    {% if not (form or counts) %}
+                                        <td> <a href="{{  url_for('main.case_create', patient_id=case.patient.id)}}"
+                                                class="btn btn-default" role="button">Create<br>case</a>  </td>
+                                    {% endif %}
+                                    <td> {{case.created_by.username}} </td>
+                                    {% if not form or form.patient_id %}
+                                    <td> <a href="{{ url_for('main.case_edit', patient_id=case.patient_id, case_id=case.id)}}">
+                                             {{case.patient.hospital_number}}<br>{{case.patient.first_name}}
+                                             {{case.patient.last_name}}</a></td>
+                                    {% endif %}
+                                    <td> {{case.consultant.username}} </td>
+                                    <td class="whitespace">{{case.medical_history}}</td>
+                                    <td class="whitespace">{{case.question}}</td>
+                                    <td class="whitespace">{{case.discussion}}</td>
+                                    <td>
+                                        {% for action in case.actions %}{% if action %}
+                                            <a href="{{ url_for('main.action_edit', user_id=action.assigned_to_id, action_id=action.id)}}"> {{ action.assigned_to.username }} </a>
+                                        {% endif %}{% endfor %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+            </div>
+        </div>
 {% endblock %}
