@@ -19,8 +19,8 @@ class RegistrationForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Length(1, 64),
                                            Email()])
     username = StringField('Username', validators=[
-        DataRequired(), Length(1, 64), Regexp('^[A-Za-z]+$', 0,
-                                          'Usernames must have only letters')])
+        DataRequired(), Length(1, 64), Regexp('^[a-z0-9]+$', 0,
+            'Usernames must have only lower-case letters and numbers')])
     is_consultant = BooleanField('Are you a consultant?')
     password = PasswordField('Password', validators=[
         DataRequired(), EqualTo('password2', message='Passwords must match.')])

@@ -6,6 +6,8 @@ from flask import current_app
 from flask_login import UserMixin, AnonymousUserMixin
 
 from . import db, login_manager
+from config import date_style
+
 
 
 class User(UserMixin, db.Model):
@@ -43,6 +45,10 @@ class Meeting(db.Model):
     date = db.Column(db.Date, unique=True)
     comment = db.Column(db.String(255))
     is_cancelled = db.Column(db.Boolean(), default=False)
+
+    @property
+    def date_repr(self):
+        return self.date.strftime(date_style['format'])
 
     def __repr__(self):
         return '<Meeting: {}>'.format(self.date)
@@ -87,6 +93,10 @@ class Patient(db.Model):
     first_name = db.Column(db.String(255), nullable=False)
     last_name = db.Column(db.String(255), nullable=False)
     date_of_birth = db.Column(db.Date, nullable=False)
+
+    @property
+    def date_of_birth_repr(self):
+        return self.date_of_birth.strftime(date_style['format'])
 
     def __repr__(self):
         return ('<Patient: '

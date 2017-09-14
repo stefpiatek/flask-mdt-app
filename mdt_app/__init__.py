@@ -4,16 +4,15 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, current_user
-from flask_mail import Mail
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
+
 from config import config
 
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.login'
 db = SQLAlchemy()
-mail = Mail()
 admin = Admin(template_mode='bootstrap3')
 
 def create_app(config_name):
@@ -24,7 +23,6 @@ def create_app(config_name):
     Bootstrap(app)
     db.init_app(app)
     login_manager.init_app(app)
-    mail.init_app(app)
 
     admin.init_app(app)
     admin.add_view(AdminModelView(User, db.session))

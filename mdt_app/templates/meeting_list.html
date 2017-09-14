@@ -5,7 +5,7 @@
 {% block page_content %}
  <div class="col-lg-8">
      <div class="table-responsive">
-            <table id="datatable" class="table table-striped">
+            <table id="unsorted" class="table">
                     <thead>
                     <tr>
                         <th>Edit meeting</th>
@@ -21,7 +21,7 @@
                         {% else %}
                             <tr>
                         {% endif %}
-                            <td><a href="{{  url_for('main.meeting_edit', pk=meeting.id)}}">{{meeting.date}}</a> </td>
+                            <td><a href="{{  url_for('main.meeting_edit', pk=meeting.id)}}"> {{meeting.date_repr}}</a> </td>
                             <td><a href="{{  url_for('main.case_list', meeting=meeting.date)}}" class="btn btn-default" role="button">View cases</a></td>
                             <td> {{meeting.comment}} </td>
                             <td>

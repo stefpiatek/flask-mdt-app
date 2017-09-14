@@ -62,7 +62,7 @@
                                     <tr>
                                 {% endif %}
                                     <td> <a href="{{ url_for('main.case_list', meeting=case.meeting.date)}}">
-                                         {{case.meeting.date}} </a></td>
+                                         {{ case.meeting.date_repr }} </a></td>
                                     {% if not (form or counts) %}
                                         <td> <a href="{{  url_for('main.case_create', patient_id=case.patient.id)}}"
                                                 class="btn btn-default" role="button">Create<br>case</a>  </td>

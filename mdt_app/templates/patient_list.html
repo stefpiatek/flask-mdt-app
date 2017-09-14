@@ -8,7 +8,7 @@
             <table id="unsorted" class="table table-striped">
                    <thead>
                         <tr>
-                            <th>Edit Action</th>
+                            <th>Edit Patient</th>
                             <th></th>
                             <th>First name</th>
                             <th>Last name</th>
@@ -16,13 +16,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                    {% for action in actions %}
+                    {% for patient in patients %}
                         <tr>
                             <td> <a href="{{  url_for('main.patient_edit', pk=patient.id)}}">{{patient.hospital_number}} </a> </td>
-                            <td><a target="_blank" href="{{  url_for('main.case_create', patient_id=patient.id)}}" class="btn btn-default" role="button">Add a case</a></td>
+                            <td><a target="_blank" href="{{  url_for('main.case_create', patient_id=patient.id)}}" class="btn btn-default" role="button">View cases</a></td>
                             <td> {{ patient.first_name }} </td>
                             <td> {{ patient.last_name }} </td>
-							<td> {{ patient.date_of_birth }} </td>
+							<td> {{patient.date_of_birth_repr }} </td>
                         </tr>
                     {% endfor %}
                   </tbody>

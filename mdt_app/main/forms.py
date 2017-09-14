@@ -1,3 +1,4 @@
+import datetime
 from wtforms import (StringField, BooleanField, DateField, SubmitField,
                      HiddenField, ValidationError, SelectField, TextAreaField,
                      widgets)
@@ -9,6 +10,7 @@ from datetime import date
 from flask_wtf import FlaskForm
 
 from ..models import Meeting, Patient, Case, Action, User
+from config import date_style
 
 # query select functions
 
@@ -35,23 +37,24 @@ class CaseForm(FlaskForm):
     case_id = HiddenField('Primary key')
     patient_id = HiddenField('Patient key')
     meeting = QuerySelectField('Meeting date', query_factory=get_meetings,
-                               get_label='date', blank_text='---',
-                               allow_blank=True, validators=[DataRequired()])
+                               get_label='date_repr',
+                               blank_text='---', allow_blank=True,
+                               validators=[DataRequired()])
     consultant = QuerySelectField('Consultant', query_factory=get_consultants,
                                   get_label='username', blank_text='---',
                                   allow_blank=True, validators=[DataRequired()])
-    next_opa = DateField('Date of next OPA', format='%Y-%m-%d',
+    next_opa = DateField('Date of next OPA', format=date_style['format'],
                          validators=[Optional()],
-                         description='YYYY-MM-DD')
+                         description=date_style['help'])
     clinic_code = SelectField('Clinic code',
                               choices=[('', '---'), ('TE', 'Test'),
                                        ('MO', 'More')],
                               validators=[Optional()])
     planned_surgery = StringField('Planned surgery',
                                   validators=[Length(0, 255)])
-    surgery_date = DateField('Date of surgery', format='%Y-%m-%d',
+    surgery_date = DateField('Date of surgery', format=date_style['format'],
                              validators=[Optional()],
-                             description='YYYY-MM-DD')
+                             description=date_style['help'])
     medical_history = TextAreaField('Medical History',
                                     validators=[DataRequired()])
     mdt_vcmg = SelectField('MDT or VGMG',
@@ -144,8 +147,8 @@ class AttendeeForm(FlaskForm):
 
 
 class MeetingForm(FlaskForm):
-    date = DateField('Date', format='%Y-%m-%d',
-                     description='YYYY-MM-DD')
+    date = DateField('Date', format='%d-%b-%Y',
+                     description='DD-MMM-YYYY')
     comment = StringField('Comment', validators=[Length(0, 255)])
     is_cancelled = BooleanField('Meeting cancelled?')
     id = HiddenField('Primary key')
@@ -164,9 +167,9 @@ class PatientForm(FlaskForm):
                              validators=[Length(2, 255), DataRequired()])
     last_name = StringField('Last name',
                             validators=[Length(2, 255), DataRequired()])
-    date_of_birth = DateField('Date of birth', format='%Y-%m-%d',
+    date_of_birth = DateField('Date of birth', format=date_style['format'],
                               validators=[DataRequired()],
-                              description='YYYY-MM-DD')
+                              description=date_style['help'])
     id = HiddenField('Primary key')
     submit = SubmitField('Submit')
 

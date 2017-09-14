@@ -4,10 +4,14 @@ from secret_info import POSTGRES_CONNECTION, SECRET_KEY
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
+date_style = {'format': '%d-%b-%Y',
+              'help': 'DD-MMM-YYYY'}
+
 class Config:
     WTF_CSRF_ENABLED = True
     SECRET_KEY = os.environ.get('SECRET_KEY') or SECRET_KEY
     SQLALCHEMY_TRACK_MODIFICATIONS = True
+
 
     @staticmethod
     def init_app(app):

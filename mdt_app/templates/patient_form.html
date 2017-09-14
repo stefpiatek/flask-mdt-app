@@ -5,13 +5,8 @@
     {{ wtf.quick_form(form, form_type="horizontal",
     horizontal_columns=('lg',1,2)) }}
 
-<br>
-<t1> Dates are in the format YYYY-MM-DD.
-<br> For example:
-<ul>
-  <li> 2016-04-21 </li>
-</ul>
-</t1>
+  {% include "_date_format.html" %}
+
 
   </div>
 

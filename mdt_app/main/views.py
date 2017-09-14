@@ -121,6 +121,7 @@ def case_edit(patient_id=None, case_id=None):
     case = Case.query.filter_by(id=case_id).first()
     actions = Action.query.filter_by(case_id=case_id).all()
     form = CaseEditForm(case_id=case_id,
+                        meeting_date=case.meeting,
                         patient_id=patient_id,
                         obj=case)
     if request.method == 'GET' and actions:
@@ -224,7 +225,7 @@ def meeting_edit(pk):
 @login_required
 def meeting_list():
     """List all meetings"""
-    meetings = Meeting.query.all()
+    meetings = Meeting.query.order_by(Meeting.date.desc()).all()
     return render_template('meeting_list.html', meetings=meetings,
                            title='Meetings')
 
@@ -277,7 +278,7 @@ def patient_edit(pk):
 @login_required
 def patient_list():
     """List all meetings with newest first"""
-    patients = Patient.query.order_by('-Patients.id').all()
+    patients = Patient.query.order_by(Patient.id.desc()).all()
     return render_template('patient_list.html', patients=patients,
                            title='Patients')
 
@@ -313,7 +314,7 @@ def action_list(user_id=None):
         title += 'for {username}'.format(username=user.username)
     else:
         action_query = Action.query
-    actions = (action_query.order_by('Actions.is_completed', '-Actions.case_id')
+    actions = (action_query.order_by(Action.is_completed, Action.case_id.desc())
                            .all())
     return render_template('action_list.html', actions=actions, user_id=user_id,
                            title=title)
