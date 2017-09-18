@@ -49,7 +49,6 @@ def case_list():
                        .order_by(Meeting.date.desc())
                        .all())
     if request.method == 'POST' and attendee_form.validate_on_submit():
-        print('form', attendee_form.user)
         form_attendees = attendee_form.user.data
         for row_attendee in attendees:
             # remove users in database that are not in form data
@@ -65,9 +64,9 @@ def case_list():
                                         user=form_user)
                 db.session.add(new_attendee)
         db.session.commit()
-        return redirect(url_for('case_list.html', cases=cases, title=title,
+        return render_template('case_list.html', cases=cases, title=title,
                                 counts=counts, attendee_form=attendee_form,
-                                attendees=attendees))
+                                attendees=attendees, meeting=meeting_date)
     return render_template('case_list.html', cases=cases, title=title,
                            counts=counts, attendee_form=attendee_form,
                            attendees=attendees)

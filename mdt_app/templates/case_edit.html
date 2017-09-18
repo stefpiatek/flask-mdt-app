@@ -2,6 +2,7 @@
 {% from "_form_helpers.html" import render_field, render_label, render_input %}
 
 {% include "case_list.html" %}
+
 <br>
 <div class="panel panel-default">
     <div class="panel-heading"><h3>Edit case</h3></div>
@@ -44,7 +45,7 @@
 						</table>
 						{% include "_date_format.html" %}
 					</div>
-					<div class="col-sm-6"  style="overflow:scroll">
+					<div class="col-sm-6">
 						<h4>Outcome of meeting</h4>
 						<table id="discussion" class ="table table-condensed" width="100%" cellspacing="0">
 							<tr>

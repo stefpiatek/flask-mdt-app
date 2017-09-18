@@ -1,11 +1,36 @@
 <!DOCTYPE html>
 <div lang="en">
+{% import "bootstrap/wtf.html" as wtf %}
+{% from '_form_helpers.html' import render_input %}
 
 {% extends "base.html" %}
 {% block page_content %}
 {% if attendee_form %}
-    {% include "_attendee_form.html" %}
-{% endif %}
+     <div class="panel panel-default">
+            <div class="panel-heading"><h3>Members present at MDT</h3></div>
+            <div class="panel-body">
+            <div class="col-sm-4">
+                <form method="POST" action="">
+			        {{ attendee_form.csrf_token }}
+			        {{ attendee_form.hidden_tag() }}
+			        {{ render_input(attendee_form.user, size=10) }}
+			        <br>
+					<input type="submit" value="Update case">
+				</form>
+            </div>
+                <div class="col-sm-1"></div>
+                <div class="col-sm-4">
+                    <strong> Members added to meeting </strong>
+                    <ul>
+                        {% for attendee in attendees %}
+                        <li> {{ attendee.user.f_name }}  {{ attendee.user.l_name }} </li>
+                        {% endfor %}
+                    </ul>
+
+                </div>
+            </div>
+            <p> Ctrl + click to select multiple members</p>
+     </div>{% endif %}
     {% if counts and cases %}
         <div class="panel panel-default">
             <div class="panel-heading"><h3>Progress</h3></div>

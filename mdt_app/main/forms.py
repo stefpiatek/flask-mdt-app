@@ -5,6 +5,7 @@ from wtforms import (StringField, BooleanField, DateField, SubmitField,
 from wtforms.ext.sqlalchemy.fields import (QuerySelectField,
                                            QuerySelectMultipleField)
 from wtforms.validators import DataRequired, Length, Regexp, Optional
+from wtforms import widgets
 from datetime import date, timedelta
 
 from flask_wtf import FlaskForm
@@ -52,8 +53,11 @@ class CaseForm(FlaskForm):
                          validators=[Optional()],
                          description=date_style['help'])
     clinic_code = SelectField('Clinic code',
-                              choices=[('', '---'), ('TE', 'Test'),
-                                       ('MO', 'More')],
+                              choices=[(code, code)
+                                       for code in
+                                       sorted(['', 'TJG1A', 'TJG2A', 'RH11A',
+                                               'JO12A', 'JO11A', 'MHP02',
+                                               'MHP2D'])],
                               validators=[Optional()])
     planned_surgery = StringField('Planned surgery',
                                   validators=[Length(0, 255)])
