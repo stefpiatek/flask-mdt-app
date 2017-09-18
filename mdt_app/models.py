@@ -45,7 +45,7 @@ class User(UserMixin, db.Model):
 class Meeting(db.Model):
     __tablename__ = 'meetings'
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.Date, unique=True, nullable=False)
+    date = db.Column(db.Date, nullable=False, unique=True)
     comment = db.Column(db.String(255))
     is_cancelled = db.Column(db.Boolean(), default=False)
 

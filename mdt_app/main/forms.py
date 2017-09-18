@@ -30,7 +30,7 @@ def get_consultants():
 
 
 def get_users():
-    return User.query.order_by(User.username)
+    return User.query.filter_by(is_confirmed=True).order_by(User.username)
 
 
 # Forms

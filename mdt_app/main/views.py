@@ -48,7 +48,7 @@ def case_list():
     cases = (case_query.join(Meeting)
                        .order_by(Meeting.date.desc())
                        .all())
-    if request.method == 'POST' and attendee_form.validate_on_submit():
+    if request == 'POST' and attendee_form.validate_on_submit():
         form_attendees = attendee_form.user.data
         for row_attendee in attendees:
             # remove users in database that are not in form data
@@ -64,6 +64,7 @@ def case_list():
                                         user=form_user)
                 db.session.add(new_attendee)
         db.session.commit()
+        attendees = Attendee.query.filter_by(meeting=meeting).all()
         return render_template('case_list.html', cases=cases, title=title,
                                 counts=counts, attendee_form=attendee_form,
                                 attendees=attendees, meeting=meeting_date)
