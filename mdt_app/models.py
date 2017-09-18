@@ -45,7 +45,7 @@ class User(UserMixin, db.Model):
 class Meeting(db.Model):
     __tablename__ = 'meetings'
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.Date, unique=True)
+    date = db.Column(db.Date, unique=True, nullable=False)
     comment = db.Column(db.String(255))
     is_cancelled = db.Column(db.Boolean(), default=False)
 
@@ -60,11 +60,15 @@ class Meeting(db.Model):
 class Case(db.Model):
     __tablename__ = 'cases'
     id = db.Column(db.Integer, primary_key=True)
-    created_by_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    created_by_id = db.Column(db.Integer, db.ForeignKey('users.id'),
+                                                        nullable=False)
     created_on = db.Column(db.Date, default=date.today)
-    meeting_id = db.Column(db.Integer, db.ForeignKey('meetings.id'))
-    patient_id = db.Column(db.Integer, db.ForeignKey('patients.id'))
-    consultant_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    meeting_id = db.Column(db.Integer, db.ForeignKey('meetings.id'),
+                                                     nullable=False)
+    patient_id = db.Column(db.Integer, db.ForeignKey('patients.id'),
+                                                     nullable=False)
+    consultant_id = db.Column(db.Integer, db.ForeignKey('users.id'),
+                                                        nullable=False)
     next_opa = db.Column(db.Date)
     clinic_code = db.Column(db.String(50))
     planned_surgery = db.Column(db.String(255))
@@ -72,8 +76,8 @@ class Case(db.Model):
     medical_history = db.Column(db.Text, nullable=False)
     question = db.Column(db.Text, nullable=False)
     discussion = db.Column(db.Text)
-    mdt_vcmg = db.Column(db.String(10), default='MDT')
-    status = db.Column(db.String(10), default='TBD')
+    mdt_vcmg = db.Column(db.String(10), default='MDT', nullable=False)
+    status = db.Column(db.String(10), default='TBD', nullable=False)
     created_by = db.relationship('User', foreign_keys=created_by_id,
                                  uselist=False)
     consultant = db.relationship('User',
@@ -118,9 +122,10 @@ class Patient(db.Model):
 class Action(db.Model):
     __tablename__ = 'actions'
     id = db.Column(db.Integer, primary_key=True)
-    case_id = db.Column(db.Integer, db.ForeignKey('cases.id'))
+    case_id = db.Column(db.Integer, db.ForeignKey('cases.id'), nullable=False)
     action = db.Column(db.String(255), nullable=False)
-    assigned_to_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    assigned_to_id = db.Column(db.Integer, db.ForeignKey('users.id'),
+                                                         nullable=False)
     is_completed = db.Column(db.Boolean(), default=False)
 
     case = db.relationship('Case', backref='actions',
@@ -136,8 +141,9 @@ class Action(db.Model):
 class Attendee(db.Model):
     __tablename__ = 'attendees'
     id = db.Column(db.Integer, primary_key=True)
-    meeting_id = db.Column(db.Integer, db.ForeignKey('meetings.id'))
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    meeting_id = db.Column(db.Integer, db.ForeignKey('meetings.id'),
+                                                     nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     meeting = db.relationship('Meeting', backref='attendees')
     user = db.relationship('User', backref='attendees')
