@@ -18,10 +18,20 @@ class LoginForm(FlaskForm):
 class RegistrationForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Length(1, 64),
                                            Email()])
-    username = StringField('Username', validators=[
-        DataRequired(), Length(1, 64), Regexp('^[a-z0-9]+$', 0,
-            'Usernames must have only lower-case letters and numbers')])
+    f_name = StringField('First name',
+                         validators=[DataRequired(), Length(1, 64),
+                                     Regexp('^[A-Za-z]+$', 0,
+                                            'Names can only have letters')])
+    l_name = StringField('Last name',
+                         validators=[DataRequired(), Length(1, 64)])
+    username = StringField('Username',
+                           validators=[DataRequired(), Length(1, 64),
+                                       Regexp('^[a-z0-9]+$', 0,
+        'Usernames must have only lower-case letters and numbers')])
     is_consultant = BooleanField('Are you a consultant?')
+    initials = StringField('Initials (required for consultants)',
+                                validators=[Length(0, 10)])
+
     password = PasswordField('Password', validators=[
         DataRequired(), EqualTo('password2', message='Passwords must match.')])
     password2 = PasswordField('Confirm password', validators=[DataRequired()])
@@ -34,6 +44,13 @@ class RegistrationForm(FlaskForm):
     def validate_username(self, field):
         if User.query.filter_by(username=field.data).first():
             raise ValidationError('Username already in use.')
+
+    def validate_initials(self, field):
+        print(field.data)
+        print(self.initials.data)
+        if self.is_consultant.data and field.data == '':
+            raise ValidationError('Please fill in the initials field')
+
 
 
 def get_users():

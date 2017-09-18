@@ -11,14 +11,14 @@
             <div class="panel-heading"><h3>Progress</h3></div>
             <div class="panel-body">
                 <div class="row">
-                    <div class="well col-sm-2">
+                    <div class="well well-white col-sm-2">
                         <strong>To be discussed: {{ counts.tbd }} / {{ cases|count }}</strong>
-                    </div><div class="col-sm-3"></div>
-                    <div class="well alert-warning col-sm-2">
-                        <strong>To be actioned: {{ counts.disc }} / {{ cases|count }} </strong>
-                    </div><div class="col-sm-3"></div>
-                    <div class="well alert-success col-sm-2">
-                        <strong>Complete: {{ counts.comp }} / {{ cases|count }}</strong>
+                    </div><div class="col-sm-2"></div>
+                    <div class="well well-warning col-sm-3">
+                        <strong>Discussed & to be actioned: {{ counts.disc }} / {{ cases|count }} </strong>
+                    </div><div class="col-sm-2"></div>
+                    <div class="well well-success col-sm-3">
+                        <strong>Discussed & actioned: {{ counts.comp }} / {{ cases|count }}</strong>
                     </div>
                 </div>
                 <div class="progress">
@@ -34,7 +34,7 @@
         <div class="panel panel-default">
             <div class="panel-heading"><h3>Overview of cases</h3></div>
             <div class="panel-body" style="overflow:scroll">
-                    <table id="datatable" class="table" width="100%" cellspacing="0">
+                    <table id="unsorted" class="table" width="100%" cellspacing="0">
                             <thead>
                                 <tr>
                                     <th>Meeting Date</th>
@@ -47,7 +47,7 @@
                                     {% endif %}
                                     <th>Consultant</th>
                                     <th>Medical History</th>
-                                    <th>Question</th>
+                                    <th>Question for MDT</th>
                                     <th>Discussion</th>
                                     <th>Actions by</th>
                                 </tr>
@@ -65,21 +65,22 @@
                                          {{ case.meeting.date_repr }} </a></td>
                                     {% if not (form or counts) %}
                                         <td> <a href="{{  url_for('main.case_create', patient_id=case.patient.id)}}"
-                                                class="btn btn-default" role="button">Create<br>case</a>  </td>
+                                                class="btn btn-default" role="button">Previous<br>cases</a>  </td>
                                     {% endif %}
-                                    <td> {{case.created_by.username}} </td>
+                                    <td> {{case.created_by.f_name}} {{case.created_by.l_name}} </td>
                                     {% if not form or form.patient_id %}
                                     <td> <a href="{{ url_for('main.case_edit', patient_id=case.patient_id, case_id=case.id)}}">
                                              {{case.patient.hospital_number}}<br>{{case.patient.first_name}}
                                              {{case.patient.last_name}}</a></td>
                                     {% endif %}
-                                    <td> {{case.consultant.username}} </td>
-                                    <td class="whitespace">{{case.medical_history}}</td>
+                                    <td> {{case.consultant.initials}} </td>
+                                    <td class="whitespace">{{case.medical_history|truncate(length=120)}}</td>
                                     <td class="whitespace">{{case.question}}</td>
                                     <td class="whitespace">{{case.discussion}}</td>
                                     <td>
                                         {% for action in case.actions %}{% if action %}
-                                            <a href="{{ url_for('main.action_edit', user_id=action.assigned_to_id, action_id=action.id)}}"> {{ action.assigned_to.username }} </a>
+                                            <a href="{{ url_for('main.action_edit', user_id=action.assigned_to_id, action_id=action.id)}}"> {{ action.assigned_to.f_name }} {{ action.assigned_to.l_name }} </a>
+                                            <br>
                                         {% endif %}{% endfor %}
                                     </td>
                                 </tr>

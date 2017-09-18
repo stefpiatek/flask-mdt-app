@@ -1,17 +1,83 @@
 {% import "bootstrap/wtf.html" as wtf %}
-
+{% from "_form_helpers.html" import render_field, render_label, render_input %}
 
 {% include "case_list.html" %}
 
-     <br>
-     <div class="panel panel-default">
-            <div class="panel-heading"><h3>Edit case</h3></div>
-            <div class="panel-body">
-            {{ wtf.quick_form(form, form_type="horizontal",
-               horizontal_columns=('lg',2,4)) }}
+<br>
+<div class="panel panel-default">
+    <div class="panel-heading"><h3>Edit case</h3></div>
+    <div class="panel-body">
+		<form method="POST" action="{{ url_for('main.case_edit', 
+											   case_id=case_id,
+											   patient_id=patient_id) }}">
+			{{ form.csrf_token }}
+			{{ form.hidden_tag() }}
+			<div class="container">
+				<div class="row">
+					<div class=" col-sm-6"  style="overflow:scroll">
+						<h4>Case details</h4>	
+						<table class ="table table-condensed" width="100%" cellspacing="0">
+							<tr>
+								{{ render_field(form.meeting) }}
+								{{ render_field(form.add_meeting) }}
+							</tr>
+							<tr>
+								{{ render_field(form.mdt_vcmg) }}
+								{{ render_field(form.consultant) }}
+							</tr>							
+							<tr>
+								<td>{{ render_label(form.medical_history) }}</td> 
+								<td colspan=3>{{ render_input(form.medical_history, rows=7, cols=60) }}</td>
+							</tr>
+							<tr>
+								<td>{{ render_label(form.question) }}</td> 
+								<td colspan=3>{{ render_input(form.question, rows=7, cols=60) }}</td>
+							</tr>				
 
-            {% include "_date_format.html" %}
-
-     </div>
-
-
+							<tr>
+								{{ render_field(form.next_opa) }}
+								{{ render_field(form.clinic_code) }}
+							</tr>
+							<tr>
+								{{ render_field(form.planned_surgery) }}
+								{{ render_field(form.surgery_date) }}
+							</tr>			
+						</table>
+						{% include "_date_format.html" %}
+					</div>
+					<div class="col-sm-6"  style="overflow:scroll">
+						<h4>Outcome of meeting</h4>
+						<table class ="table table-condensed" width="100%" cellspacing="0">
+							<tr>
+								<td>{{ form.discussion.label }}</td> 
+								<td colspan=2>{{ form.discussion(rows=7, cols=60) }}</td>
+							</tr>
+							<tr>
+								{{ render_field(form.action1, size=40) }} 
+								<td>{{ render_input(form.action1_to) }}</td>
+							</tr>
+							<tr>
+								{{ render_field(form.action2, size=40) }}
+								<td>{{ render_input(form.action2_to) }}</td>
+							</tr>
+							<tr>
+								{{ render_field(form.action3, size=40) }}
+								<td>{{ render_input(form.action3_to) }}</td>
+							</tr>
+							<tr>
+								{{ render_field(form.action4, size=40) }}
+								<td>{{ render_input(form.action4_to) }}</td>
+							</tr>
+							<tr>
+								{{ render_field(form.action5, size=40) }}
+								<td>{{ render_input(form.action5_to) }}</td>
+							</tr>
+							<tr> {{render_field(form.no_actions) }}</tr>
+							<tr><td colspan=3><input style="float:right" type="submit" value="Update case"></td></tr>
+						</table>
+					</div>
+				</div>	
+			</div>	
+		</form>
+	</div>
+</div>

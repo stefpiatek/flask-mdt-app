@@ -4,7 +4,20 @@
      <div class="panel panel-default">
             <div class="panel-heading"><h3>Members present at MDT</h3></div>
             <div class="panel-body">
-            {{ wtf.quick_form(attendee_form, form_type="vertical",
-               horizontal_columns=('lg',2,4)) }}
+                <div class="col-sm-4"
+                    {{ wtf.quick_form(attendee_form, form_type="vertical",
+                      horizontal_columns=('lg',2,4)) }}
+                </div>
+                <div class="col-sm-1"></div>
+                <div class="col-sm-4">
+                    <strong> Members added to meeting </strong>
+                    <ul>
+                        {% for attendee in attendees %}
+                        <li> {{ attendee.user.f_name }}  {{ attendee.user.l_name }} </li>
+                        {% endfor %}
+                    </ul>
+
+                </div>
             </div>
+            <p> Ctrl + click to select multiple members</p>
      </div>

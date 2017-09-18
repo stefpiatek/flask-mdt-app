@@ -5,7 +5,7 @@ from wtforms import (StringField, BooleanField, DateField, SubmitField,
 from wtforms.ext.sqlalchemy.fields import (QuerySelectField,
                                            QuerySelectMultipleField)
 from wtforms.validators import DataRequired, Length, Regexp, Optional
-from datetime import date
+from datetime import date, timedelta
 
 from flask_wtf import FlaskForm
 
@@ -16,9 +16,11 @@ from config import date_style
 
 
 def get_meetings():
-    return (Meeting.query.filter(Meeting.date >= str(date.today()))
+    earliest_date = str(date.today() - timedelta(days=14))
+    return (Meeting.query.filter(Meeting.date >= earliest_date)
                          .filter(Meeting.is_cancelled == 'FALSE')
-                         .order_by(Meeting.date))
+                         .order_by(Meeting.date)
+                         .limit(20))
 
 
 def get_consultants():
@@ -36,12 +38,15 @@ def get_users():
 class CaseForm(FlaskForm):
     case_id = HiddenField('Primary key')
     patient_id = HiddenField('Patient key')
-    meeting = QuerySelectField('Meeting date', query_factory=get_meetings,
+    add_meeting = DateField('Add new MDT date', format=date_style['format'],
+                         validators=[Optional()],
+                         description=date_style['help'])
+    meeting = QuerySelectField('MDT date', query_factory=get_meetings,
                                get_label='date_repr',
                                blank_text='---', allow_blank=True,
-                               validators=[DataRequired()])
+                               validators=[Optional()])
     consultant = QuerySelectField('Consultant', query_factory=get_consultants,
-                                  get_label='username', blank_text='---',
+                                  get_label='initials', blank_text='---',
                                   allow_blank=True, validators=[DataRequired()])
     next_opa = DateField('Date of next OPA', format=date_style['format'],
                          validators=[Optional()],
@@ -64,14 +69,24 @@ class CaseForm(FlaskForm):
     submit = SubmitField('Submit')
 
     def validate_meeting(self, field):
-        existing = (Case.query
-                        .filter_by(meeting_id=field.data.id,
-                                   patient_id=self.patient_id.data)
-                        .first())
-        if not self.case_id.data:
-            self.case_id.data = -1
-        if existing and int(self.case_id.data) != int(existing.id):
-            raise ValidationError('Patient already has a case on that date')
+        if field.data:
+            existing = (Case.query
+                            .filter_by(meeting_id=field.data.id,
+                                       patient_id=self.patient_id.data)
+                            .first())
+            if existing and int(self.case_id.data) != int(existing.id):
+                raise ValidationError('Patient already has a case on this date')
+            if self.add_meeting.data:
+                raise ValidationError('Choose a MDT date or type one in')
+        else:
+            if not self.add_meeting.data:
+                raise ValidationError('Choose a MDT date or type one in')
+
+    def validate_add_meeting(self, field):
+        existing = Meeting.query.filter_by(date=field.data).first()
+        if existing:
+            raise ValidationError('Meeting already exists on that day')
+
 
 
 class CaseEditForm(CaseForm):
@@ -96,7 +111,17 @@ class CaseEditForm(CaseForm):
     action5_to = QuerySelectField('Action #5 by', query_factory=get_users,
                                   get_label='username', blank_text='---',
                                   allow_blank=True)
+    no_actions = BooleanField('No actions required')
     submit = SubmitField('Submit')
+
+
+    def validate_no_actions(self, field):
+        if field.data:
+            if any(self[action].data
+                   for action in
+                   ['action1', 'action2', 'action3', 'action4', 'action5']):
+                raise ValidationError(
+                    'Ticking here requires no actions entered')
 
     def validate_action1(self, field):
         if not field.data:
@@ -140,9 +165,12 @@ class CaseEditForm(CaseForm):
 
 
 class AttendeeForm(FlaskForm):
-    user = QuerySelectMultipleField('Usenames',
+    user = QuerySelectMultipleField('Members',
                                     query_factory=get_users,
-                                    get_label='username')
+                                    get_label=lambda u: str(('{} {}'
+                                                             ).format(u.f_name,
+                                                                      u.l_name))
+                                    )
     submit = SubmitField('Save attendees')
 
 
@@ -170,6 +198,10 @@ class PatientForm(FlaskForm):
     date_of_birth = DateField('Date of birth', format=date_style['format'],
                               validators=[DataRequired()],
                               description=date_style['help'])
+    sex = SelectField('Sex',
+                              choices=[('', '---'), ('F', 'Female'),
+                                       ('M', 'Male')],
+                              validators=[DataRequired()])
     id = HiddenField('Primary key')
     submit = SubmitField('Submit')
 
@@ -177,6 +209,16 @@ class PatientForm(FlaskForm):
         existing = Patient.query.filter_by(hospital_number=field.data).first()
         if existing and int(self.id.data) != int(existing.id):
             raise ValidationError('Patient with hospital number already exists')
+
+    def validate_date_of_birth(self, field):
+        existing = (Patient.query
+                           .filter_by(first_name=self.first_name.data,
+                                      last_name=self.last_name.data,
+                                      date_of_birth=field.data)
+                           .first())
+        if existing and int(self.id.data) != int(existing.id):
+            raise ValidationError('Patient with same first name, last name '
+                                  'and date of birth already exists')
 
 class ActionForm(FlaskForm):
     id = HiddenField('Primary key')

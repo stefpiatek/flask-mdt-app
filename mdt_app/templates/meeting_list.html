@@ -8,10 +8,10 @@
             <table id="unsorted" class="table">
                     <thead>
                     <tr>
-                        <th>Edit meeting</th>
-                        <th></th>
+                        <th>Meeting</th>
                         <th>Comment</th>
                         <th>Is cancelled?</th>
+                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -21,8 +21,7 @@
                         {% else %}
                             <tr>
                         {% endif %}
-                            <td><a href="{{  url_for('main.meeting_edit', pk=meeting.id)}}"> {{meeting.date_repr}}</a> </td>
-                            <td><a href="{{  url_for('main.case_list', meeting=meeting.date)}}" class="btn btn-default" role="button">View cases</a></td>
+                            <td><a href="{{  url_for('main.case_list', meeting=meeting.date)}}"> {{meeting.date_repr}}</a> </td>
                             <td> {{meeting.comment}} </td>
                             <td>
                             {% if meeting.is_cancelled == True %}
@@ -31,6 +30,8 @@
                                No
                             {%  endif %}
                               </td>
+                            <td><a href="{{  url_for('main.meeting_edit', pk=meeting.id)}}" class="btn btn-default" role="button">Edit meeting</a></td>
+
                         </tr>
                     {% endfor %}
                   </tbody>

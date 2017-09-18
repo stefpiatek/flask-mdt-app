@@ -9,12 +9,11 @@ from . import main
 from .forms import *
 
 
-@main.route('/')
 @main.route('/index')
 def index():
     return render_template('index.html', title='Welcome to the MDT App')
 
-
+@main.route('/')
 @main.route('/cases/',  methods=['GET', 'POST'])
 @login_required
 def case_list():
@@ -23,27 +22,32 @@ def case_list():
     :request meeting: meeting date to filter by
     """
     meeting_date = request.args.get('meeting')
-    title = 'Cases'
+    title = 'All cases'
     if meeting_date:
         meeting = Meeting.query.filter_by(date=meeting_date).first()
-        cases = Case.query.filter_by(meeting=meeting).all()
+        case_query = Case.query.filter_by(meeting=meeting)
         attendees = Attendee.query.filter_by(meeting=meeting).all()
         attendee_list = [attendee.user for attendee in attendees]
         attendee_form = AttendeeForm(data={'user': attendee_list})
-        title += ': {}'.format(meeting_date)
+        title = 'Meeting: {}'.format(meeting.date_repr)
         counts = {stat.lower(): (Case.query
                                      .filter_by(status=stat, meeting=meeting)
                                      .count())
                   for stat in
                   ['TBD', 'COMP', 'DISC']}
         # For a case to be complete, it must be discussed so add together
-        if cases:
-            counts['percent_discussed'] = int(100 / len(cases) *
+        case_count = len(case_query.all())
+        if case_count:
+            counts['percent_discussed'] = int(100 / case_count *
                                               (counts['disc'] + counts['comp']))
     else:
-        cases = Case.query.all()
+        case_query = Case.query
         attendee_form = None
         counts = None
+        attendees = None
+    cases = (case_query.join(Meeting)
+                       .order_by(Meeting.date.desc())
+                       .all())
     if request.method == 'POST' and attendee_form.validate_on_submit():
         print('form', attendee_form.user)
         form_attendees = attendee_form.user.data
@@ -61,10 +65,12 @@ def case_list():
                                         user=form_user)
                 db.session.add(new_attendee)
         db.session.commit()
-        render_template('case_list.html', cases=cases, title=title,
-                        counts=counts, attendee_form=attendee_form)
+        return redirect(url_for('case_list.html', cases=cases, title=title,
+                                counts=counts, attendee_form=attendee_form,
+                                attendees=attendees))
     return render_template('case_list.html', cases=cases, title=title,
-                           counts=counts, attendee_form=attendee_form)
+                           counts=counts, attendee_form=attendee_form,
+                           attendees=attendees)
 
 
 @main.route('/cases/create/<patient_id>',  methods=['GET', 'POST'])
@@ -78,7 +84,11 @@ def case_create(patient_id=None):
         flash('Patient details not given')
         return render_template('404.html', title='Page does not exist')
     patient = Patient.query.filter_by(id=patient_id).first()
-    cases = Case.query.filter_by(patient_id=patient_id).all()
+    cases = (Case.query
+                 .filter_by(patient_id=patient_id)
+                 .join(Meeting)
+                 .order_by(Meeting.date.desc())
+                 .all())
     form = CaseForm(patient_id=patient_id, case_id=-1)
     if form.validate_on_submit():
         case = Case(meeting_id=form.meeting.data.id,
@@ -117,27 +127,51 @@ def case_edit(patient_id=None, case_id=None):
         flash('Patient or case details not given')
         return render_template('404.html', title='Page does not exist')
     patient = Patient.query.filter_by(id=patient_id).first()
-    cases = Case.query.filter_by(patient_id=patient_id).all()
+    cases = (Case.query
+                 .filter_by(patient_id=patient_id)
+                 .join(Meeting)
+                 .order_by(Meeting.date.desc())
+                 .all())
     case = Case.query.filter_by(id=case_id).first()
-    actions = Action.query.filter_by(case_id=case_id).all()
-    form = CaseEditForm(case_id=case_id,
-                        meeting_date=case.meeting,
-                        patient_id=patient_id,
-                        obj=case)
-    if request.method == 'GET' and actions:
-        # actions exist so populate the form
-        for act_model in actions:
-            form[act_model.form_field].data = act_model.action
-            form[act_model.form_field + '_to'].data = act_model.assigned_to
-    if request.method == 'POST' and form.validate_on_submit():
-        # save values from case form
-        if form.discussion.data and case.status == 'TBD':
-            case.status = 'DISC'
-        else:
-            # revert to TBD if discussion has been removed
+    actions = (Action.query.filter_by(case_id=case_id)
+                           .order_by(Action.form_field)
+                           .all())
+    action_list = ['action1', 'action2', 'action3', 'action4', 'action5']
+    form = CaseEditForm(obj=case,
+                        case_id=case_id)
+    if request.method == 'GET':
+        if actions:
+            # actions exist so populate the form
+            for act_model in actions:
+                form[act_model.form_field].data = act_model.action
+                form[act_model.form_field + '_to'].data = act_model.assigned_to
+        elif case.status == 'COMP':
+            form.no_actions.data = True
+    elif form.validate_on_submit():
+        # actions added or changed in form, revert to DISC
+        # if stay the same or removed, do nothing
+        new_form_actions = not all(form[act].data in (db_act.action
+                                                      for db_act in actions)
+                                   or form[act].data is None
+                                   for act in action_list)
+        if form.no_actions.data:
+            case.status = 'COMP'
+        elif not form.discussion.data:
             case.status = 'TBD'
+        elif new_form_actions or not actions:
+            case.status = 'DISC'
         # save form data for cases
-        case.meeting_id = form.meeting.data.id
+        if form.meeting.data:
+            case.meeting_id = form.meeting.data.id
+        else:
+            new_date = Meeting(date=form.add_meeting.data)
+            db.session.add(new_date)
+            db.session.commit()
+            flash('MDT meeting added for {}'.format(new_date.date_repr))
+            added_meeting = (Meeting.query
+                                    .filter_by(date=form.add_meeting.data)
+                                    .first())
+            case.meeting_id = added_meeting.id
         case.consultant_id = form.consultant.data.id
         case.patient_id = patient_id
         case.next_opa = form.next_opa.data
@@ -152,8 +186,7 @@ def case_edit(patient_id=None, case_id=None):
                ).format(f_name=patient.first_name,
                         l_name=patient.last_name))
         # add actions from form
-        for act_field in ['action1', 'action2',
-                          'action3', 'action4', 'action5']:
+        for act_field in action_list:
             form_action = form[act_field].data
             form_assigned_to = form[act_field + '_to'].data
             action_query = (Action.query
@@ -178,8 +211,10 @@ def case_edit(patient_id=None, case_id=None):
                 to_remove = action_query.one()
                 db.session.delete(to_remove)
         db.session.commit()
-        return redirect(url_for('main.case_list', meeting=case.meeting.date))
+        case = Case.query.filter_by(id=case_id).first()
+        return redirect(url_for('main.case_list'))
     return render_template('case_edit.html', cases=cases, form=form,
+                           patient_id=patient_id, case_id=case_id,
                            title=('Cases for {f_name} {l_name}'
                                   ).format(f_name=patient.first_name,
                                            l_name=patient.last_name))
@@ -215,6 +250,34 @@ def meeting_edit(pk):
         meeting.date = form.date.data
         meeting.comment = form.comment.data
         meeting.is_cancelled = form.is_cancelled.data
+        if form.is_cancelled.data:
+            next_meeting = (Meeting.query
+                                   .filter(Meeting.date > meeting.date,
+                                           Meeting.is_cancelled == False)
+                                   .order_by(Meeting.date)
+                                   .first())
+            if not next_meeting:
+                flash('Cases could not be pushed to next meeting, '
+                      'no meetings exist after this one')
+            else:
+                cases = Case.query.filter_by(meeting_id=pk)
+                for case in cases:
+                    if any(case.patient_id == next_meet_case.patient_id
+                           for next_meet_case in next_meeting.cases):
+                        flash(('Case for patient {f_name} {l_name} was not '
+                               'moved as patient also has a case on {new_date}')
+                              .format(f_name=case.patient.first_name,
+                                      l_name=case.patient.last_name,
+                                      old_date=meeting.date_repr,
+                                      new_date=next_meeting.date_repr))
+                    else:
+                        case.meeting_id = next_meeting.id
+                        flash(('Case for patient {f_name} {l_name} was moved '
+                              'from {old_date} to {new_date}')
+                              .format(f_name=case.patient.first_name,
+                                      l_name=case.patient.last_name,
+                                      old_date=meeting.date_repr,
+                                      new_date=next_meeting.date_repr))
         db.session.commit()
         flash('Meeting for {date} has been edited'.format(date=form.date.data))
         return redirect(url_for('main.meeting_list'))
@@ -244,7 +307,8 @@ def patient_create():
         patient = Patient(hospital_number=form.hospital_number.data.strip(),
                           first_name=form.first_name.data.strip(),
                           last_name=form.last_name.data.strip(),
-                          date_of_birth=form.date_of_birth.data)
+                          date_of_birth=form.date_of_birth.data,
+                          sex=form.sex.data)
         db.session.add(patient)
         db.session.commit()
         flash('New Patient added'
@@ -266,6 +330,7 @@ def patient_edit(pk):
         patient.first_name = form.first_name.data.strip()
         patient.last_name = form.last_name.data.strip()
         patient.date_of_birth = form.date_of_birth.data
+        patient.sex = form.sex.data
         db.session.commit()
         flash('Patient edited'
               ' ({l_name}, {f_name})'.format(f_name=patient.first_name,

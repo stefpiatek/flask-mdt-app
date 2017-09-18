@@ -52,7 +52,10 @@ def register():
     if form.validate_on_submit():
         user = User(email=form.email.data,
                     username=form.username.data,
-                    password=form.password.data)
+                    password=form.password.data,
+                    f_name=form.f_name.data,
+                    l_name=form.l_name.data,
+                    initials=form.initials.data.upper())
         db.session.add(user)
         db.session.commit()
         flash('Before you can use the site,'

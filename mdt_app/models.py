@@ -13,6 +13,9 @@ from config import date_style
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
+    f_name = db.Column(db.String(50), nullable=False)
+    l_name = db.Column(db.String(50), nullable=False)
+    initials = db.Column(db.String(10))
     username = db.Column(db.String(50), index=True, unique=True)
     email = db.Column(db.String(100), index=True, unique=True)
     password_hash = db.Column(db.String(128))
@@ -93,10 +96,18 @@ class Patient(db.Model):
     first_name = db.Column(db.String(255), nullable=False)
     last_name = db.Column(db.String(255), nullable=False)
     date_of_birth = db.Column(db.Date, nullable=False)
+    sex = db.Column(db.String(1), nullable=False)
 
     @property
     def date_of_birth_repr(self):
-        return self.date_of_birth.strftime(date_style['format'])
+        today = date.today()
+        birth_date = self.date_of_birth
+        # age: take year and -1 if born later in year than current point in year
+        age = (today.year - birth_date.year -
+               ((today.month, today.day) < (birth_date.month, birth_date.day)))
+        return ('{dob} ({age})'
+                ).format(dob=birth_date.strftime(date_style['format']),
+                         age=age)
 
     def __repr__(self):
         return ('<Patient: '

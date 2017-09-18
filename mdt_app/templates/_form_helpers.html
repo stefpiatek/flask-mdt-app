@@ -1,0 +1,30 @@
+{% macro render_label(field) %}
+
+  {% if field.flags.required %}
+       {{ field.label(class='required') }}
+  {% else %}
+        {{ field.label }}
+  {% endif %}
+{% endmacro %}
+
+{% macro render_input(field) %}
+  {{ field(**kwargs) }}
+  {% if field.errors %}
+    {% for error in field.errors %}
+      <div class="alert alert-danger">{{ error }}</div>
+    {% endfor %}
+  {% endif %}
+{% endmacro %}
+
+{% macro render_field(field) %}
+  <td>
+      {{ render_label(field) }}
+  </td>
+  <td> {{ field(**kwargs) }}
+  {% if field.errors %}
+    {% for error in field.errors %}
+      <div class="alert alert-danger">{{ error }}</div>
+    {% endfor %}
+  {% endif %}
+  </td>
+{% endmacro %}
