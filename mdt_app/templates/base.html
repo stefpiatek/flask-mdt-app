@@ -96,28 +96,14 @@ td.whitespace {
       </div>
       {% with messages = get_flashed_messages() %}
           {% if messages %}
-          <ul>{% for message in messages %}
-                  <li>{{ message }} </li>
-          {% endfor %}</ul>
-              <!-- Modal
-              <div id="openModal" class="modal fade" role="dialog">
-                  <div class="modal-dialog">
-                  <div class="modal-content">
-                      <div class="modal-body">
-                          <ul>
-                              {% for message in messages %}
-                                  <li>{{ message }} </li>
-                             {% endfor %}
-                          </ul>
-                      </div>
-                      <div class="modal-footer">
-                          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                     </div>
-                  </div>
-              </div>
-          </div> -->
-
-      {% endif %}
+          {% for message in messages %}
+                  <div class="alert alert-info">{{ message }} </div>
+          {% endfor %}
+          {% elif form %}
+              {% if form.errors %}
+              <div class="alert alert-danger"> Errors in form </div>
+              {% endif %}
+          {% endif %}
       {% endwith %}
       </div>
    </div>
@@ -149,5 +135,10 @@ td.whitespace {
             show : true
         });
     });
+<!-- use scroll='element' to load a page on a particular element-->
+{% if scroll %}
+    document.location.hash = '#' + '{{ scroll }}';
+{% endif %}
+
 </script>
 {% endblock %}

@@ -26,8 +26,8 @@
                     {% else %}
                         <tr class='alert alert-warning'>
                     {% endif %}
-                            <td> <a href="{{ url_for('main.case_edit', case_id=action.case_id, patient_id=action.case.patient_id) }}"> {{action.case.patient.hospital_number}} {{action.case.patient.first_name}} {{action.case.patient.last_name}} </a> </td>
-                            <td> <a href="{{ url_for('main.action_edit', action_id=action.id, user_id=user_id) }}">{{action.action}} </a> </td>
+                            <td> <a href="{{ url_for('main.case_edit', case_id=action.case_id, patient_id=action.case.patient_id) }}" class="btn btn-primary"> {{action.case.patient.hospital_number}} {{action.case.patient.first_name}} {{action.case.patient.last_name}} </a> </td>
+                            <td> <a href="{{ url_for('main.action_edit', action_id=action.id, user_id=user_id) }}" class="btn btn-info">{{action.action}} </a> </td>
                             <td><a href="{{ url_for('main.action_list', user_id=action.assigned_to_id)}}">{{action.assigned_to.username}}</a></td>
                             {% if action.is_completed %}
                                 <td>  Yes </td>
@@ -42,13 +42,13 @@
             </table>
         </div>
         <div class="row">
-            <div class="well alert-warning col-sm-3">
+            <div class="well well-warning col-sm-3">
                 <strong>Action incomplete </strong>
             </div><div class="col-sm-1"></div>
-            <div class="well col-sm-3">
+            <div class="well well-white col-sm-3">
                 <strong>Action complete</strong>
             </div><div class="col-sm-1"></div>
-            <div class="well alert-success col-sm-4">
+            <div class="well well-success col-sm-4">
                 <strong>All actions complete for case</strong>
             </div>
         </div>

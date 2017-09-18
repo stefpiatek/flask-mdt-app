@@ -22,7 +22,7 @@
                             <td> {{ patient.first_name }} </td>
                             <td> {{ patient.last_name }} </td>
 							<td> {{patient.date_of_birth_repr }} </td>
-                            <td><a target="_blank" href="{{  url_for('main.patient_edit', pk=patient.id)}}" class="btn btn-default" role="button">Edit patient</a></td>
+                            <td><a target="_blank" href="{{  url_for('main.patient_edit', pk=patient.id)}}" class="btn btn-info" role="button">Edit patient</a></td>
                         </tr>
                     {% endfor %}
                   </tbody>
