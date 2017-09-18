@@ -121,7 +121,6 @@ class Action(db.Model):
     case_id = db.Column(db.Integer, db.ForeignKey('cases.id'))
     action = db.Column(db.String(255), nullable=False)
     assigned_to_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    form_field = db.Column(db.String(8), nullable=False)
     is_completed = db.Column(db.Boolean(), default=False)
 
     case = db.relationship('Case', backref='actions',

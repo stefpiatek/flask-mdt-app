@@ -88,79 +88,26 @@ class CaseForm(FlaskForm):
             raise ValidationError('Meeting already exists on that day')
 
 
-
 class CaseEditForm(CaseForm):
     discussion = TextAreaField('Discussion')
-    action1 = StringField('Action #1', validators=[Length(0, 255)])
-    action1_to = QuerySelectField('Action #1 by', query_factory=get_users,
-                                  get_label='username', blank_text='---',
-                                  allow_blank=True)
-    action2 = StringField('Action #2', validators=[Length(0, 255)])
-    action2_to = QuerySelectField('Action #2 by', query_factory=get_users,
-                                  get_label='username', blank_text='---',
-                                  allow_blank=True)
-    action3 = StringField('Action #3', validators=[Length(0, 255)])
-    action3_to = QuerySelectField('Action #3 by', query_factory=get_users,
-                                  get_label='username', blank_text='---',
-                                  allow_blank=True)
-    action4 = StringField('Action #4', validators=[Length(0, 255)])
-    action4_to = QuerySelectField('Action #4 by', query_factory=get_users,
-                                  get_label='username', blank_text='---',
-                                  allow_blank=True)
-    action5 = StringField('Action #5', validators=[Length(0, 255)])
-    action5_to = QuerySelectField('Action #5 by', query_factory=get_users,
+    action = StringField('Action', validators=[Length(0, 255)])
+    action_to = QuerySelectField('Assigned to', query_factory=get_users,
                                   get_label='username', blank_text='---',
                                   allow_blank=True)
     no_actions = BooleanField('No actions required')
     submit = SubmitField('Submit')
 
-
     def validate_no_actions(self, field):
         if field.data:
-            if any(self[action].data
-                   for action in
-                   ['action1', 'action2', 'action3', 'action4', 'action5']):
-                raise ValidationError(
-                    'Ticking here requires no actions entered')
+            existing = Action.query.filter_by(case_id=self.case_id.data).all()
+            if existing or self.action.data:
+                raise ValidationError('Actions already exist for this case')
 
-    def validate_action1(self, field):
-        if not field.data:
-            field.data = None
-        if field.data and field.data == self.action1_to.data:
-            raise ValidationError('Action and action by must both be filled in')
-
-    def validate_action2(self, field):
-        if not field.data:
-            field.data = None
-        elif not self.action1.data:
-            raise ValidationError('Fill out previous actions first')
-        if field.data and field.data == self.action2_to.data:
-            raise ValidationError('Action and action by must both be filled in')
-
-    def validate_action3(self, field):
-        if not field.data:
-            field.data = None
-        elif not (self.action1.data and self.action2.data):
-            raise ValidationError('Fill out previous actions first')
-        if field.data and field.data == self.action3_to.data:
-            raise ValidationError('Action and action by must both be filled in')
-
-    def validate_action4(self, field):
-        if not field.data:
-            field.data = None
-        elif not (self.action1.data and self.action2.data
-                  and self.action3.data):
-            raise ValidationError('Fill out previous actions first')
-        if field.data and field.data == self.action4_to.data:
-            raise ValidationError('Action and action by must both be filled in')
-
-    def validate_action5(self, field):
-        if not field.data:
-            field.data = None
-        elif not (self.action1.data and self.action2.data
-                  and self.action3.data and self.action4.data):
-            raise ValidationError('Fill out previous actions first')
-        if field.data and field.data == self.action5_to.data:
+    def validate_action(self, field):
+        if ((field.data and self.action_to.data) or
+             (not field.data and not self.action_to.data)):
+            pass
+        else:
             raise ValidationError('Action and action by must both be filled in')
 
 

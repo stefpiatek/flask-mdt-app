@@ -134,31 +134,22 @@ def case_edit(patient_id=None, case_id=None):
                  .all())
     case = Case.query.filter_by(id=case_id).first()
     actions = (Action.query.filter_by(case_id=case_id)
-                           .order_by(Action.form_field)
                            .all())
-    action_list = ['action1', 'action2', 'action3', 'action4', 'action5']
     form = CaseEditForm(obj=case,
                         case_id=case_id)
     if request.method == 'GET':
-        if actions:
-            # actions exist so populate the form
-            for act_model in actions:
-                form[act_model.form_field].data = act_model.action
-                form[act_model.form_field + '_to'].data = act_model.assigned_to
-        elif case.status == 'COMP':
+        if case.status == 'COMP' and not actions:
+            # Set up form, if case complete and no actions, tick no actions
             form.no_actions.data = True
     elif form.validate_on_submit():
-        # actions added or changed in form, revert to DISC
-        # if stay the same or removed, do nothing
-        new_form_actions = not all(form[act].data in (db_act.action
-                                                      for db_act in actions)
-                                   or form[act].data is None
-                                   for act in action_list)
         if form.no_actions.data:
+            # No actions ticked, set to COMP
             case.status = 'COMP'
         elif not form.discussion.data:
+            # No discussion, set to TBD
             case.status = 'TBD'
-        elif new_form_actions or not actions:
+        elif form.action.data or not actions:
+            # actions added, revert to DISC
             case.status = 'DISC'
         # save form data for cases
         if form.meeting.data:
@@ -186,34 +177,27 @@ def case_edit(patient_id=None, case_id=None):
                ).format(f_name=patient.first_name,
                         l_name=patient.last_name))
         # add actions from form
-        for act_field in action_list:
-            form_action = form[act_field].data
-            form_assigned_to = form[act_field + '_to'].data
-            action_query = (Action.query
-                                  .filter_by(case_id=case_id,
-                                             form_field=act_field))
-            action_row = action_query.first()
-            if form_action and form_assigned_to:
-                if action_row:
-                    # form actions and row exist, update row
-                    action_row.action = form_action
-                    action_row.assigned_to_id = form_assigned_to.id
-                    db.session.commit()
-                else:
-                    # form actions and no row, create row
-                    new_action = Action(case_id=case_id,
-                                        form_field=act_field,
-                                        action=form_action,
-                                        assigned_to=form_assigned_to)
-                    db.session.add(new_action)
-            elif action_row:
-                # form field empty, but row exists, delete row
-                to_remove = action_query.one()
-                db.session.delete(to_remove)
+        if form.action.data:
+            new_action = Action(case_id=case_id,
+                                action=form.action.data,
+                                assigned_to=form.action_to.data)
+            db.session.add(new_action)
         db.session.commit()
         case = Case.query.filter_by(id=case_id).first()
+        if form.action.data:
+            # reset action form to blank and load form at table
+            form.action.data = None
+            form.action_to.data = None
+            return render_template('case_edit.html', cases=cases, form=form,
+                                   case=case,
+                                   patient_id=patient_id, case_id=case_id,
+                                   scroll='discussion',
+                                   title=('Cases for {f_name} {l_name}'
+                                          ).format(f_name=patient.first_name,
+                                                   l_name=patient.last_name))
         return redirect(url_for('main.case_list'))
     return render_template('case_edit.html', cases=cases, form=form,
+                           case=case,
                            patient_id=patient_id, case_id=case_id,
                            title=('Cases for {f_name} {l_name}'
                                   ).format(f_name=patient.first_name,
