@@ -4,24 +4,33 @@
 
 {% block page_content %}
  <div class="col-lg-8">
+ <ul class="nav nav-tabs">
+    <li class="active"><a href="{{ url_for('main.patient_list') }}">View Patients </a></li>
+    <li><a href="{{ url_for('main.patient_create') }}">Add a Patient</a></li>
+  </ul> <br>
      <div class="table-responsive">
             <table id="unsorted" class="table table-striped">
                    <thead>
                         <tr>
-                            <th>View cases</th>
+                            <th>View & add cases</th>
+                            <th>Hospital number</th>
                             <th>First name</th>
                             <th>Last name</th>
 							<th>Date of birth</th>
+							<th>Sex</th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
                     {% for patient in patients %}
                         <tr>
-                            <td> <a href="{{  url_for('main.case_create', patient_id=patient.id)}}">{{patient.hospital_number}} </a> </td>
+                        <td> <a href="{{  url_for('main.case_create', patient_id=patient.id)}}"
+                              class="btn btn-default" role="button">Cases</a>  </td>
+                            <td> {{patient.hospital_number}} </td>
                             <td> {{ patient.first_name }} </td>
                             <td> {{ patient.last_name }} </td>
 							<td> {{patient.date_of_birth_repr }} </td>
+							<td> {% if patient.sex == 'M' %} Male {% else %} Female {% endif %} </td>
                             <td><a target="_blank" href="{{  url_for('main.patient_edit', pk=patient.id)}}" class="btn btn-info" role="button">Edit patient</a></td>
                         </tr>
                     {% endfor %}

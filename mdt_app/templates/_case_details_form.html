@@ -1,0 +1,38 @@
+{% from "_form_helpers.html" import render_field, render_label, render_input %}
+
+{{ form.csrf_token }}
+{{ form.hidden_tag() }}
+<tr>
+	{{ render_field(form.meeting) }}
+	{{ render_field(form.add_meeting, class="dtpick") }}
+</tr>
+<tr>
+	{{ render_field(form.mdt_vcmg) }}
+	{{ render_field(form.consultant) }}
+</tr>
+{% if cases %}
+	<tr>
+		<th>Patient </th>
+		<td>{{ cases[0].patient.first_name }} {{ cases[0].patient.last_name }}</td>
+		<th>Date of birth (age)</th>
+		<td>{{ cases[0].patient.date_of_birth_repr }}</td>
+	</tr>
+{% endif %}
+<tr>
+	<td>{{ render_label(form.medical_history) }}</td>
+	<td colspan=3>{{ render_input(form.medical_history, rows=7, cols=60) }}</td>
+</tr>
+<tr>
+	<td>{{ render_label(form.question) }}</td>
+	<td colspan=3>{{ render_input(form.question, rows=7, cols=60) }}</td>
+</tr>
+<tr>
+	{{ render_field(form.next_opa) }}
+	{{ render_field(form.clinic_code) }}
+</tr>
+<tr>
+	{{ render_field(form.planned_surgery) }}
+	{{ render_field(form.surgery_date) }}
+</tr>
+</table>
+{% include "_date_format.html" %}

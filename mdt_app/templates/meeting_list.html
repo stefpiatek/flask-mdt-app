@@ -3,9 +3,14 @@
 {% extends "base.html" %}
 
 {% block page_content %}
- <div class="col-lg-8">
+<div class="col-lg-8">
+
+  <ul class="nav nav-tabs">
+    <li class="active"><a href="{{ url_for('main.meeting_list') }}">View Meetings </a></li>
+    <li><a href="{{ url_for('main.meeting_create') }}">Add a Meeting</a></li>
+  </ul> <br>
      <div class="table-responsive">
-            <table id="unsorted" class="table">
+            <table id="basic_dt" class="table">
                     <thead>
                     <tr>
                         <th>Meeting</th>

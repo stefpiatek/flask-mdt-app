@@ -17,7 +17,7 @@
 {{ super() }}
 <style>
 .required {font-weight: bold;
-  color: #072c65; }
+  color: #207720; }
 body { padding-top: 60px; }
 td.whitespace {
  white-space: pre-wrap;
@@ -38,6 +38,7 @@ td.whitespace {
 </style>
 <link rel="stylesheet" type="text/css"
       href="{{url_for('static', filename='datatables.min.css')}}"/>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 {% endblock %}
 
 
@@ -56,22 +57,12 @@ td.whitespace {
           <div class="collapse navbar-collapse">
             <ul class="nav nav-pills navbar-static-top">
                 <li><a href="{{ url_for('main.case_list') }}">All cases</a></li>
-              <li class="dropdown">
-              <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Meetings <span class="caret"></span></a>
-              <ul class="dropdown-menu">
-                <li><a href="{{ url_for('main.meeting_list') }}">View Meetings</a></li>
-                <li><a href="{{ url_for('main.meeting_create') }}">Add a Meeting</a></li>
-              </ul></li>
-              <li class="dropdown">
-              <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Patients <span class="caret"></span></a>
-              <ul class="dropdown-menu">
-                <li><a href="{{ url_for('main.patient_list') }}">View Patients</a></li>
-                <li><a href="{{ url_for('main.patient_create') }}">Add a Patient</a></li>
-              </ul></li>
+              <li><a href="{{ url_for('main.meeting_list') }}">Meetings</a></li>
+              <li><a href="{{ url_for('main.patient_list') }}">Patients</a></li>
               <li><a href="{{ url_for('main.action_list', user_id=current_user.id) }}">View my actions</a></li>
                 {% if current_user.is_authenticated %}
                 <li class = "navbar-right"><a href="{{ url_for('auth.logout') }}">Logout</a></li>
-                <li class="navbar-text navbar-right">Welcome {{ current_user.username }}</li>
+                <li class="navbar-text navbar-right">Welcome {{ current_user.f_name }} {{ current_user.l_name }}</li>
                 <li class = "navbar-right dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin <span class="caret"></span></a>
               <ul class="dropdown-menu">
@@ -94,12 +85,16 @@ td.whitespace {
       <div class="page-header">
         <h1> {{ title }} </h1>
       </div>
-      {% with messages = get_flashed_messages() %}
-          {% if messages %}
+      {% with messages = get_flashed_messages(with_categories=True) %}
           {% for message in messages %}
-                  <div class="alert alert-info">{{ message }} </div>
+              {% if message[0] == 'post-header' %}
+                  <h4> {{ message[1] }} </h4>
+                  <br>
+              {% else %}
+                   <div class="alert alert-{{ message[0] }}">{{ message[1] }} </div>
+              {% endif %}
           {% endfor %}
-          {% elif form %}
+          {% if form %}
               {% if form.errors %}
               <div class="alert alert-danger"> Errors in form </div>
               {% endif %}
@@ -116,6 +111,7 @@ td.whitespace {
 {% block scripts %}
 {{ super() }}
 <script type="text/javascript" src="{{url_for('static', filename='datatables.min.js')}}"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 <script type="text/javascript" charset="utf-8">
     $(document).ready(function(){
         $('#datatable').dataTable({
@@ -129,12 +125,28 @@ td.whitespace {
                 "aaSorting": []
         });
     });
+    $(document).ready(function(){
+        $('#basic_dt').dataTable({
+                "aaSorting": [],
+                "paging": false,
+
+        });
+    });
+
     jQuery(document).ready(function(){
         $('#openModal').modal({
             keyboard: true,
             show : true
         });
     });
+    $(function() {
+		$( ".dtpick" ).datepicker({
+		    dateFormat: 'dd-M-yy',
+		    minDate: new Date(),
+		    firstDay: 1,
+		    beforeShowDay: $.datepicker.noWeekends
+		});
+	});
 <!-- use scroll='element' to load a page on a particular element-->
 {% if scroll %}
     document.location.hash = '#' + '{{ scroll }}';

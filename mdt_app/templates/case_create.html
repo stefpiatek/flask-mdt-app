@@ -1,14 +1,21 @@
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% include "case_list.html" %}
-     <br>
-     <div class="panel panel-default">
-            <div class="panel-heading"><h3>Add a new case</h3></div>
-            <div class="panel-body">
-            {{ wtf.quick_form(form, form_type="horizontal",
-               horizontal_columns=('lg',2,4)) }}
-            {% include "_date_format.html" %}
-            </div>
-     </div>
+<br>
 
+<div class="panel panel-default">
+    <div class="panel-heading"><h3>Create case</h3></div>
+    <div class="panel-body">
+			<div class="container">
+				<div class="row">
+					<div class="col-sm-6">
+						<h4>Case details</h4>
+						<table class ="table table-condensed" width="100%" cellspacing="0">
+							<form method="POST" action="{{ url_for('main.case_create',
+												   patient_id=patient_id) }}">
+							<!-- creates cells for form -->
+							{% include "_case_details_form.html" %}
 
+       					<input style="float:right" type="submit" value="Create case">
+						</form>
+					</div>

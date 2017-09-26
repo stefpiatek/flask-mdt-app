@@ -9,26 +9,28 @@
      <div class="panel panel-default">
             <div class="panel-heading"><h3>Members present at MDT</h3></div>
             <div class="panel-body">
-            <div class="col-sm-4">
-                <form method="POST" action="">
-			        {{ attendee_form.csrf_token }}
-			        {{ attendee_form.hidden_tag() }}
-			        {{ render_input(attendee_form.user, size=10) }}
-			        <br>
-					<input type="submit" value="Update case">
-				</form>
-            </div>
-                <div class="col-sm-1"></div>
-                <div class="col-sm-4">
-                    <strong> Members added to meeting </strong>
-                    <ul>
-                        {% for attendee in attendees %}
-                        <li> {{ attendee.user.f_name }}  {{ attendee.user.l_name }} </li>
-                        {% endfor %}
-                    </ul>
-
-                </div>
-            </div>
+            <form method="POST" action="{{ url_for('main.case_list', meeting=meeting) }}">
+                {{ attendee_form.csrf_token }}
+				<div class="col-sm-3">
+					<br>
+					{{ render_input(attendee_form.user, size=15) }}
+				</div>
+				<div class="col-sm-3">
+					<strong>{{ attendee_form.comment.label }}</strong>
+					{{ render_input(attendee_form.comment, rows=11, cols=20) }}
+				</div>
+    			<div class="col-sm-1"></div>
+     			<div class="col-sm-3">
+					<strong> Members added to meeting </strong>
+					<ul>
+	 					{% for attendee in attendees %}
+	         				<li> {{ attendee.user.f_name }}  {{ attendee.user.l_name }} </li>
+						{% endfor %}
+					</ul>
+					</div>
+				</div>
+			<input type="submit" value="Save MDT members and comments">
+            </form><br><br>
             <p> Ctrl + click to select multiple members</p>
      </div>{% endif %}
     {% if counts and cases %}
@@ -36,12 +38,12 @@
             <div class="panel-heading"><h3>Progress</h3></div>
             <div class="panel-body">
                 <div class="row">
-                    <div class="well well-white col-sm-2">
+                    <div class="well well-white col-sm-3">
                         <strong>To be discussed: {{ counts.tbd }} / {{ cases|count }}</strong>
-                    </div><div class="col-sm-2"></div>
+                    </div><div class="col-sm-1"></div>
                     <div class="well well-warning col-sm-3">
                         <strong>Discussed & to be actioned: {{ counts.disc }} / {{ cases|count }} </strong>
-                    </div><div class="col-sm-2"></div>
+                    </div><div class="col-sm-1"></div>
                     <div class="well well-success col-sm-3">
                         <strong>Discussed & actioned: {{ counts.comp }} / {{ cases|count }}</strong>
                     </div>
@@ -53,16 +55,18 @@
                          {{ counts.percent_discussed }}% Discussed
                     </div>
                 </div>
+                <a href="{{ url_for('main.case_list', meeting=meeting, push_cases=True)}}"
+                   class="btn btn-default" role="button">Push undiscussed cases to next meeting</a>
             </div>
         </div>
     {% else %}
 		<div class="row">
-			<div class="well well-white col-sm-2">
+			<div class="well well-white col-sm-3">
 				<strong>To be discussed</strong>
-			</div><div class="col-sm-2"></div>
+			</div><div class="col-sm-1"></div>
 			<div class="well well-warning col-sm-3">
 				<strong>Discussed & to be actioned</strong>
-			</div><div class="col-sm-2"></div>
+			</div><div class="col-sm-1"></div>
 			<div class="well well-success col-sm-3">
 				<strong>Discussed & actioned</strong>
 			</div>
@@ -116,7 +120,7 @@
                                     <td class="whitespace">{{case.discussion}}</td>
                                     <td>
                                         {% for action in case.actions %}{% if action %}
-                                            <a href="{{ url_for('main.action_edit', user_id=action.assigned_to_id, action_id=action.id)}}"> {{ action.assigned_to.username }} </a>
+                                            <a href="{{ url_for('main.action_list', user_id=action.assigned_to_id)}}"> {{ action.assigned_to.username }} </a>
                                             <br>
                                         {% endif %}{% endfor %}
                                     </td>

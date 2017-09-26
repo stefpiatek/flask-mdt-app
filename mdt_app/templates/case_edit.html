@@ -7,45 +7,19 @@
 <div class="panel panel-default">
     <div class="panel-heading"><h3>Edit case</h3></div>
     <div class="panel-body">
-		<form method="POST" action="{{ url_for('main.case_edit', 
-											   case_id=case_id,
-											   patient_id=patient_id) }}">
-			{{ form.csrf_token }}
-			{{ form.hidden_tag() }}
 			<div class="container">
 				<div class="row">
-					<div class=" col-sm-6"  style="overflow:scroll">
-						<h4>Case details</h4>	
-						<table class ="table table-condensed" width="100%" cellspacing="0">
-							<tr>
-								{{ render_field(form.meeting) }}
-								{{ render_field(form.add_meeting) }}
-							</tr>
-							<tr>
-								{{ render_field(form.mdt_vcmg) }}
-								{{ render_field(form.consultant) }}
-							</tr>						
-							<tr>
-								<td>{{ render_label(form.medical_history) }}</td> 
-								<td colspan=3>{{ render_input(form.medical_history, rows=7, cols=60) }}</td>
-							</tr>
-							<tr>
-								<td>{{ render_label(form.question) }}</td> 
-								<td colspan=3>{{ render_input(form.question, rows=7, cols=60) }}</td>
-							</tr>				
+					<div class=" col-sm-6" style="overflow:scroll">
+					<h4>Case details</h4>
+     				<table class ="table table-condensed" width="100%" cellspacing="0">
 
-							<tr>
-								{{ render_field(form.next_opa) }}
-								{{ render_field(form.clinic_code) }}
-							</tr>
-							<tr>
-								{{ render_field(form.planned_surgery) }}
-								{{ render_field(form.surgery_date) }}
-							</tr>			
-						</table>
-						{% include "_date_format.html" %}
-					</div>
-					<div class="col-sm-6">
+					<form method="POST" action="{{ url_for('main.case_edit',
+											   case_id=case_id,
+											   patient_id=patient_id) }}">
+			            <!-- creates cells for form -->
+			            {% include "_case_details_form.html" %}
+			        </div>
+					<div class="col-sm-6" style="overflow:scroll">
 						<h4>Outcome of meeting</h4>
 						<table id="discussion" class ="table table-condensed" width="100%" cellspacing="0">
 							<tr>

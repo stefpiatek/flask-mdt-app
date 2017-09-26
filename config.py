@@ -30,6 +30,7 @@ class DevelopmentConfig(Config):
 class TestingConfig(Config):
     DEBUG = False
     TESTING = True
+    TEST_SERVER_PORT = 5001
     SQLALCHEMY_DATABASE_URI = (os.environ.get('TEST_DATABASE_URL') or
                                POSTGRES_CONNECTION + 'mdt_test')
 

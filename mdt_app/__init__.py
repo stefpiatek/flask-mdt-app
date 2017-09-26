@@ -16,6 +16,7 @@ db = SQLAlchemy()
 admin = Admin(template_mode='bootstrap3')
 
 def create_app(config_name):
+    global db
     app = Flask(__name__)
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
@@ -45,7 +46,10 @@ class AdminModelView(ModelView):
     page_size = 50  # the number of entries to display on the list view
 
     def is_accessible(self):
-        return current_user.is_admin
+        if current_user.is_anonymous:
+            return False
+        else:
+            return current_user.is_admin
 
     def inaccessible_callback(self, name, **kwargs):
         return render_template('403.html')

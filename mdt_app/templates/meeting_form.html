@@ -1,13 +1,30 @@
 {% extends "base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
+{% from "_form_helpers.html" import render_field, render_label, render_input %}
 
-  {% block page_content %}
-    {{ wtf.quick_form(form, form_type="horizontal",
-    horizontal_columns=('lg',1,2)) }}
+{% block page_content %}
+  <div class="col-lg-4">
 
-{% include "_date_format.html" %}
+	  <ul class="nav nav-tabs">
+			<li><a href="{{ url_for('main.meeting_list') }}">View Meetings </a></li>
+			{% if 'new' in title %}
+				<li>
+				{% else %}
+				<li class="active">
+			{% endif %}
+			<a href="{{ url_for('main.meeting_create') }}">Add a Meeting </a></li>
+	   </ul> <br>
+		<table class="table">
+			<form method="POST" action="">
+			{{ form.csrf_token }}
+			{{ form.hidden_tag() }}
+			<tr>{{ render_field(form.date, class="dtpick") }} </tr>
+			<tr>{{ render_field(form.comment) }}</tr>
+			<tr>{{ render_field(form.is_cancelled) }}</tr>
+			<tr><td colspan=4><input style="float:right" type="submit" value="Submit"></td></tr>
+			</form>
+		</table>
+		{% include "_date_format.html" %}
 
-
-  </div>
+	</div>
 
   {% endblock %}

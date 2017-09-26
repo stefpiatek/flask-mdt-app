@@ -3,9 +3,13 @@
 {% extends "base.html" %}
 
 {% block page_content %}
- <div class="col-lg-10">
 
-
+ <div>
+     {% if title != 'Actions ' %}
+     <a href="{{ url_for('main.action_list') }}"
+        class="btn btn-default" role="button">View all actions</a>
+     <br><br>
+     {% endif %}
      <div class="table-responsive">
             <table id="unsorted" class="table">
                     <thead>
@@ -27,7 +31,7 @@
                         <tr class='alert alert-warning'>
                     {% endif %}
                             <td> <a href="{{ url_for('main.case_edit', case_id=action.case_id, patient_id=action.case.patient_id) }}" class="btn btn-primary"> {{action.case.patient.hospital_number}} {{action.case.patient.first_name}} {{action.case.patient.last_name}} </a> </td>
-                            <td> <a href="{{ url_for('main.action_edit', action_id=action.id, user_id=user_id) }}" class="btn btn-info">{{action.action}} </a> </td>
+                            <td> <a href="{{ url_for('main.action_edit', action_id=action.id, user_id=user_id) }}" class="btn btn-info">{{action.action|truncate(length=60)}} </a> </td>
                             <td><a href="{{ url_for('main.action_list', user_id=action.assigned_to_id)}}">{{action.assigned_to.username}}</a></td>
                             {% if action.is_completed %}
                                 <td>  Yes </td>

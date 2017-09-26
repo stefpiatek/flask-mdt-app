@@ -2,6 +2,15 @@
 {% import "bootstrap/wtf.html" as wtf %}
 
   {% block page_content %}
+      <ul class="nav nav-tabs">
+         <li><a href="{{ url_for('main.patient_list') }}">View Patients </a></li>
+         {% if 'new' in title %}
+         <li>
+         {% else %}
+         <li class="active">
+         {% endif %}
+         <a href="{{ url_for('main.patient_create') }}">Add a Patient</a></li>
+       </ul> <br>
     {{ wtf.quick_form(form, form_type="horizontal",
     horizontal_columns=('lg',1,2)) }}
 
