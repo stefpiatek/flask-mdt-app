@@ -147,9 +147,6 @@ def case_create(patient_id=None):
     patient_id -- patient id
     """
 
-    if not patient_id:
-        flash('Patient details not given', category='danger')
-        return render_template('404.html', title='Page does not exist')
     patient = Patient.query.filter_by(id=patient_id).first()
     cases = (Case.query
                  .filter_by(patient_id=patient_id)
@@ -307,7 +304,6 @@ def case_edit(patient_id=None, case_id=None):
             # reset action form to blank and load form at table
             form.action.data = None
             form.action_to.data = None
-            # TODO simplify this as a redirect?
             return render_template('case_edit.html', cases=cases, form=form,
                                    case=case,
                                    patient_id=patient_id, case_id=case_id,
@@ -565,8 +561,8 @@ def action_edit(action_id):
         case_id = action.case_id
         db.session.delete(action)
         db.session.commit()
-        flash("Action '{act}' deleted".format(act=action.action)
-              , category='success')
+        flash("Action '{act}' deleted".format(act=action.action),
+              category='success')
         remaining_actions = Action.query.filter_by(case_id=case_id).all()
         if not remaining_actions:
             case = Case.query.filter_by(id=case_id).first()

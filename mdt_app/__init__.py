@@ -13,7 +13,7 @@ login_manager = LoginManager()
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.login'
 db = SQLAlchemy()
-admin = Admin(template_mode='bootstrap3')
+
 
 def create_app(config_name):
     global db
@@ -25,6 +25,7 @@ def create_app(config_name):
     db.init_app(app)
     login_manager.init_app(app)
 
+    admin = Admin(template_mode='bootstrap3')
     admin.init_app(app)
     admin.add_view(AdminModelView(User, db.session))
     admin.add_view(AdminModelView(Patient, db.session))
