@@ -1,21 +1,28 @@
+{% extends "case_list.html" %}
+
 {% import "bootstrap/wtf.html" as wtf %}
 
-{% include "case_list.html" %}
-<br>
-
-<div class="panel panel-default">
-    <div class="panel-heading"><h3>Create case</h3></div>
-    <div class="panel-body">
+{% block page_content %}
+    {{ super() }}
+	<br>
+	<div class="panel panel-default">
+		<div class="panel-heading"><h3>Create case</h3></div>
+		<div class="panel-body">
 			<div class="container">
 				<div class="row">
 					<div class="col-sm-6">
 						<h4>Case details</h4>
-						<table class ="table table-condensed" width="100%" cellspacing="0">
-							<form method="POST" action="{{ url_for('main.case_create',
+						<form method="POST" action="{{ url_for('main.case_create',
 												   patient_id=patient_id) }}">
-							<!-- creates cells for form -->
-							{% include "_case_details_form.html" %}
-
-       					<input style="float:right" type="submit" value="Create case">
+							<table class ="table table-condensed" width="100%" cellspacing="0">
+								<!-- creates cells for form -->
+								{% include "_case_details_form.html" %}
+								<input style="float:right" type="submit" value="Create case">
+							</table>
 						</form>
 					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

@@ -1,156 +1,160 @@
-{% extends "bootstrap/base.html" %}
-{% import "bootstrap/fixes.html" as fixes %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="MDT app for urodynamics">
+		<meta name="author" content="Stef Piatek">
+		<title>
+			{% block title %}MDT - {{ title }} {% endblock %}
+		</title>
 
-{% block title %}MDT - {{ title }} {% endblock %}
+		{% block head %}
+		<link rel="icon" href="{{ url_for('static', filename ='favicon.ico') }}">
+		<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+			<!--[if lt IE 9]>
+			  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+			  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+			<![endif]-->
+		{% endblock %}
 
-{% block head %}
-{{ super() }}
-{{fixes.ie8()}}
-<link rel="shortcut icon" href="{{ url_for('static', filename ='favicon.ico') }}"
-     type="image/x-icon">
-<link rel="icon" href="{{ url_for('static', filename = 'favicon.ico') }}"
-     type="image/x-icon">
-{% endblock %}
+		{% block styles %}
+		<link rel="stylesheet" src="{{url_for('static', filename='datatables.min.css')}}"></link>
+		<link rel="stylesheet" src="{{url_for('static', filename='fixes/ie10-viewport-bug-workaround.css')}}"></link>
 
+		<style>
+			.required {
+				font-weight: bold;
+				color: #207720; }
+				body { padding-top: 60px;
+				}
+			td.whitespace {
+				white-space: pre-wrap;
+				}
+			.well-warning{
+				color: #8a6d3b;
+				background:  #fcf8e3 !important;
+				}
+			.well-success{
+				color: #3c763d;
+				background: #dff0d8 !important;
+				}
+			.well-white{
+				background-color: #FDFDFD;
+				}
+		</style>
+		<link rel="stylesheet" type="text/css"
+			  href="{{url_for('static', filename='datatables.min.css')}}"/>
+		<link rel="stylesheet" href="{{url_for('static', filename='jquery-ui-1.12.1/themes/smoothness/jquery-ui.min.css')}}">
+		{% endblock %}
+	</head>
 
-{% block styles %}
-{{ super() }}
-<style>
-.required {font-weight: bold;
-  color: #207720; }
-body { padding-top: 60px; }
-td.whitespace {
- white-space: pre-wrap;
- }
-.well-warning{
-  color: #8a6d3b;
-  background:  #fcf8e3 !important;
-}
-.well-success{
-  color: #3c763d;
-  background: #dff0d8 !important;
-}
-.well-white{
-  background-color: #FDFDFD;
-}
+	<body>
+		{% block navbar %}
+		<div class="navbar navbar-default navbar-fixed-top">
+			<div class="container-fixed">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+						<a class="navbar-brand" href="{{ url_for('main.index') }}">MDT</a>
+				  </div>
+				<div class="collapse navbar-collapse">
+					<ul class="nav nav-pills navbar-static-top">
+						<li><a href="{{ url_for('main.case_list') }}">All cases</a></li>
+						<li><a href="{{ url_for('main.meeting_list') }}">Meetings</a></li>
+						<li><a href="{{ url_for('main.patient_list') }}">Patients</a></li>
+						<li><a href="{{ url_for('main.action_list', user_id=current_user.id) }}">View my actions</a></li>
+						{% if current_user.is_authenticated %}
+							<li class = "navbar-right"><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+							<li class="navbar-text navbar-right">Welcome {{ current_user.f_name }} {{ current_user.l_name }}</li>
+							<li class = "navbar-right dropdown">
+								<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin <span class="caret"></span></a>
+								<ul class="dropdown-menu">
+									<li><a href="{{ url_for('auth.reset_password') }}">Reset passwords</a></li>
+									<li><a target="_blank" href="/admin">Admin site</a></li>
+								</ul>
+							</li>
+						{% else %}
+							<li class = "navbar-right"><a href="{{ url_for('auth.login') }}">Login</a></li>
+						{% endif %}
+					</ul>
+				</div><!--/.nav-collapse -->
+			</div><!--/.container-fluid -->
+		</div>
+		{% endblock %}
 
+		{% block content %}
+			<div class="container-fluid">
+				<div class="row-fluid">
+					<div class="span12">
+						<div class="page-header">
+							<h1> {{ title }} </h1>
+						</div>
+						{% with messages = get_flashed_messages(with_categories=True) %}
+							{% for message in messages %}
+								{% if message[0] == 'post-header' %}
+									<h4> {{ message[1] }} </h4>
+									<br>
+								{% else %}
+									<div class="alert alert-{{ message[0] }}">{{ message[1] }} </div>
+								{% endif %}
+							{% endfor %}
+							{% if form %}
+								{% if form.errors %}
+									<div class="alert alert-danger"> Errors in form </div>
+								{% endif %}
+							{% endif %}
+						{% endwith %}
+					</div>
+				</div>
+				{% block page_content %}{% endblock %}
+			</div>
+		{% endblock %}
 
-</style>
-<link rel="stylesheet" type="text/css"
-      href="{{url_for('static', filename='datatables.min.css')}}"/>
-<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-{% endblock %}
+		{% block scripts %}
+			<!-- datatables contains bootstrap3 and jquery 1.12-->
+			<script type="text/javascript" src="{{url_for('static', filename='datatables.min.js') }}"></script>
+			<script type="text/javascript" src="{{url_for('static', filename='jquery-ui-1.12.1/jquery-ui.js') }}"></script>
+			<script type="text/javascript" charset="utf-8">
+				$(document).ready(function(){
+					$('#datatable').dataTable({
+						"paging": false,
+						"order": [0, "desc"]
+						});
+					});
+				$(document).ready(function(){
+					$('#unsorted').dataTable({
+						"iDisplayLength": 25,
+						"aaSorting": []
+						});
+					});
+				$(document).ready(function(){
+					$('#basic_dt').dataTable({
+						"aaSorting": [],
+						"paging": false,
+						});
+					});
+				$(function() {
+					$( ".dtpick" ).datepicker({
+						dateFormat: 'dd-M-yy',
+						minDate: new Date(),
+						firstDay: 1,
+						beforeShowDay: $.datepicker.noWeekends
+						});
+					});
+			<!-- use scroll='element' to load a page on a particular element-->
+			{% if scroll %}
+				document.location.hash = '#' + '{{ scroll }}';
+			{% endif %}
+			</script>
+			<script rel="stylesheet" src="{{url_for('static', filename='fixes/ie10-viewport-bug-workaround.js') }}"></script>
 
+		{% endblock %}
+	</body>
 
-{% block navbar %}
-<div class="navbar navbar-default navbar-fixed-top">
-    <div class="container-fixed">
-          <div class="navbar-header">
-              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                  <span class="sr-only">Toggle navigation</span>
-                  <span class="icon-bar"></span>
-                  <span class="icon-bar"></span>
-                  <span class="icon-bar"></span>
-              </button>
-              <a class="navbar-brand" href="{{ url_for('main.index') }}">MDT</a>
-          </div>
-          <div class="collapse navbar-collapse">
-            <ul class="nav nav-pills navbar-static-top">
-                <li><a href="{{ url_for('main.case_list') }}">All cases</a></li>
-              <li><a href="{{ url_for('main.meeting_list') }}">Meetings</a></li>
-              <li><a href="{{ url_for('main.patient_list') }}">Patients</a></li>
-              <li><a href="{{ url_for('main.action_list', user_id=current_user.id) }}">View my actions</a></li>
-                {% if current_user.is_authenticated %}
-                <li class = "navbar-right"><a href="{{ url_for('auth.logout') }}">Logout</a></li>
-                <li class="navbar-text navbar-right">Welcome {{ current_user.f_name }} {{ current_user.l_name }}</li>
-                <li class = "navbar-right dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin <span class="caret"></span></a>
-              <ul class="dropdown-menu">
-                <li><a href="{{ url_for('auth.reset_password') }}">Reset passwords</a></li>
-                <li><a target="_blank" href="/admin">Admin site</a></li>
-              </ul></li>
-                {% else %}
-                <li class = "navbar-right"><a href="{{ url_for('auth.login') }}">Login</a></li>
-                {% endif %}
-             </ul>
-          </div><!--/.nav-collapse -->
-        </div><!--/.container-fluid -->
-</div>
-{% endblock %}
-
-{% block content %}
-<div class="container-fluid">
-    <div class="row-fluid">
-      <div class="span12">
-      <div class="page-header">
-        <h1> {{ title }} </h1>
-      </div>
-      {% with messages = get_flashed_messages(with_categories=True) %}
-          {% for message in messages %}
-              {% if message[0] == 'post-header' %}
-                  <h4> {{ message[1] }} </h4>
-                  <br>
-              {% else %}
-                   <div class="alert alert-{{ message[0] }}">{{ message[1] }} </div>
-              {% endif %}
-          {% endfor %}
-          {% if form %}
-              {% if form.errors %}
-              <div class="alert alert-danger"> Errors in form </div>
-              {% endif %}
-          {% endif %}
-      {% endwith %}
-      </div>
-   </div>
-   {% block page_content %}{% endblock %}
-</div>
-    {% endblock %}
-
-
-
-{% block scripts %}
-{{ super() }}
-<script type="text/javascript" src="{{url_for('static', filename='datatables.min.js')}}"></script>
-<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-<script type="text/javascript" charset="utf-8">
-    $(document).ready(function(){
-        $('#datatable').dataTable({
-                "paging": false,
-                "order": [0, "desc"]
-        });
-    });
-    $(document).ready(function(){
-        $('#unsorted').dataTable({
-                "iDisplayLength": 25,
-                "aaSorting": []
-        });
-    });
-    $(document).ready(function(){
-        $('#basic_dt').dataTable({
-                "aaSorting": [],
-                "paging": false,
-
-        });
-    });
-
-    jQuery(document).ready(function(){
-        $('#openModal').modal({
-            keyboard: true,
-            show : true
-        });
-    });
-    $(function() {
-		$( ".dtpick" ).datepicker({
-		    dateFormat: 'dd-M-yy',
-		    minDate: new Date(),
-		    firstDay: 1,
-		    beforeShowDay: $.datepicker.noWeekends
-		});
-	});
-<!-- use scroll='element' to load a page on a particular element-->
-{% if scroll %}
-    document.location.hash = '#' + '{{ scroll }}';
-{% endif %}
-
-</script>
-{% endblock %}
+</html>

@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
-  {% block page_content %}
-  {% if current_user.is_authenticated %}
-  <p> You are logged in as {{ current_user.username }}
-      <br><br>
-      You can <a href="{{ url_for('auth.change_password') }}">change your password</a> if it has been reset.
-  </p>
-  {% else %}
-    <p> Please <a href="{{ url_for('auth.login') }}">log in</a>
-        or <a href="{{ url_for('auth.register') }}">register</a> to continue
-    </p>
-  {% endif %}
-  {% endblock %}
+{% block page_content %}
+	{% if current_user.is_authenticated %}
+		<p> You are logged in as {{ current_user.username }}
+			<br><br>
+			You can <a href="{{ url_for('auth.change_password') }}">change your password</a> if it has been reset.
+		</p>
+	{% else %}
+		<p> Please <a href="{{ url_for('auth.login') }}">log in</a>
+			or <a href="{{ url_for('auth.register') }}">register</a> to continue
+		</p>
+	{% endif %}
+{% endblock %}

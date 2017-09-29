@@ -1,64 +1,57 @@
-<!DOCTYPE html>
-<html lang="en">
 {% extends "base.html" %}
 
 {% block page_content %}
-
- <div>
-     {% if title != 'Actions ' %}
-     <a href="{{ url_for('main.action_list') }}"
-        class="btn btn-default" role="button">View all actions</a>
-     <br><br>
-     {% endif %}
-     <div class="table-responsive">
-            <table id="unsorted" class="table">
-                    <thead>
-                        <tr>
-                            <th>Edit case</th>
-                            <th>Edit action</th>
-                            <th>Show actions for user</th>
-                            <th>Completed?</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {% for action in actions %}
-                    {% if action.case.status == 'COMP' %}
-                        <tr class='alert alert-success'>
-                    {% elif action.is_completed %}
-                        <tr>
-                    {% else %}
-                        <tr class='alert alert-warning'>
-                    {% endif %}
-                            <td> <a href="{{ url_for('main.case_edit', case_id=action.case_id, patient_id=action.case.patient_id) }}" class="btn btn-primary"> {{action.case.patient.hospital_number}} {{action.case.patient.first_name}} {{action.case.patient.last_name}} </a> </td>
-                            <td> <a href="{{ url_for('main.action_edit', action_id=action.id, user_id=user_id) }}" class="btn btn-info">{{action.action|truncate(length=60)}} </a> </td>
-                            <td><a href="{{ url_for('main.action_list', user_id=action.assigned_to_id)}}">{{action.assigned_to.username}}</a></td>
-                            {% if action.is_completed %}
-                                <td>  Yes </td>
-                                <td></td>
-                            {% else %}
-                                <td>  No </td>
-                                <td> <a href="{{ url_for('main.action_list', action_id=action.id)}}" class="btn btn-default" role="button">Mark as complete</a> </td>
-                            {% endif %}
-                        </tr>
-                    {% endfor %}
-                  </tbody>
-            </table>
-        </div>
-        <div class="row">
-            <div class="well well-warning col-sm-3">
-                <strong>Action incomplete </strong>
-            </div><div class="col-sm-1"></div>
-            <div class="well well-white col-sm-3">
-                <strong>Action complete</strong>
-            </div><div class="col-sm-1"></div>
-            <div class="well well-success col-sm-4">
-                <strong>All actions complete for case</strong>
-            </div>
-        </div>
-     </div>
-     <!-- panel-body-->
-  </div>
-  </div>
-  </div>
+	<div>
+		{% if title != 'Actions ' %}
+		<a href="{{ url_for('main.action_list') }}"
+		   class="btn btn-default" role="button">View all actions</a>
+		<br><br>
+		{% endif %}
+		<div class="table-responsive">
+			<table id="unsorted" class="table">
+				<thead>
+					<tr>
+						<th>Edit case</th>
+						<th>Edit action</th>
+						<th>Show actions for user</th>
+						<th>Completed?</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for action in actions %}
+						{% if action.case.status == 'COMP' %}
+							<tr class='alert alert-success'>
+						{% elif action.is_completed %}
+							<tr>
+						{% else %}
+							<tr class='alert alert-warning'>
+						{% endif %}
+						<td> <a href="{{ url_for('main.case_edit', case_id=action.case_id, patient_id=action.case.patient_id) }}" class="btn btn-primary"> {{action.case.patient.hospital_number}} {{action.case.patient.first_name}} {{action.case.patient.last_name}} </a> </td>
+						<td> <a href="{{ url_for('main.action_edit', action_id=action.id, user_id=user_id) }}" class="btn btn-info">{{action.action|truncate(length=60)}} </a> </td>
+						<td><a href="{{ url_for('main.action_list', user_id=action.assigned_to_id)}}">{{action.assigned_to.username}}</a></td>
+						{% if action.is_completed %}
+							<td>  Yes </td>
+							<td></td>
+						{% else %}
+							<td>  No </td>
+							<td> <a href="{{ url_for('main.action_list', action_id=action.id)}}" class="btn btn-default" role="button">Mark as complete</a> </td>
+						{% endif %}
+						</tr>
+					{% endfor %}
+			    </tbody>
+			</table>
+		</div>
+		<div class="row">
+			<div class="well well-warning col-sm-3">
+				<strong>Action incomplete </strong>
+			</div><div class="col-sm-1"></div>
+			<div class="well well-white col-sm-3">
+				<strong>Action complete</strong>
+			</div><div class="col-sm-1"></div>
+			<div class="well well-success col-sm-4">
+				<strong>All actions complete for case</strong>
+			</div>
+		</div>
+	</div>
 {% endblock %}

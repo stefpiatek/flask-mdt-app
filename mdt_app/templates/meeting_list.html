@@ -3,48 +3,43 @@
 {% extends "base.html" %}
 
 {% block page_content %}
-<div class="col-lg-8">
-
-  <ul class="nav nav-tabs">
-    <li class="active"><a href="{{ url_for('main.meeting_list') }}">View Meetings </a></li>
-    <li><a href="{{ url_for('main.meeting_create') }}">Add a Meeting</a></li>
-  </ul> <br>
-     <div class="table-responsive">
-            <table id="basic_dt" class="table">
-                    <thead>
-                    <tr>
-                        <th>Meeting</th>
-                        <th>Comment</th>
-                        <th>Is cancelled?</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for meeting in meetings %}
-                        {% if meeting.is_cancelled == True %}
-                            <tr class="alert alert-danger">
-                        {% else %}
-                            <tr>
-                        {% endif %}
-                            <td><a href="{{  url_for('main.case_list', meeting=meeting.date)}}"> {{meeting.date_repr}}</a> </td>
-                            <td> {{meeting.comment}} </td>
-                            <td>
-                            {% if meeting.is_cancelled == True %}
-                               Yes
-                            {%  else %}
-                               No
-                            {%  endif %}
-                              </td>
-                            <td><a href="{{  url_for('main.meeting_edit', pk=meeting.id)}}" class="btn btn-info" role="button">Edit meeting</a></td>
-
-                        </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-             </div>
-          </div>
-        <!-- panel-body-->
-        </div>
-     </div>
-  </div>
+	<div class="col-lg-8">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{{ url_for('main.meeting_list') }}">View Meetings </a></li>
+			<li><a href="{{ url_for('main.meeting_create') }}">Add a Meeting</a></li>
+		</ul>
+		<br>
+		<div class="table-responsive">
+			<table id="basic_dt" class="table">
+				<thead>
+				<tr>
+					<th>Meeting</th>
+					<th>Comment</th>
+					<th>Is cancelled?</th>
+					<th></th>
+				</tr>
+				</thead>
+				<tbody>
+					{% for meeting in meetings %}
+						{% if meeting.is_cancelled == True %}
+							<tr class="alert alert-danger">
+						{% else %}
+							<tr>
+						{% endif %}
+							<td><a href="{{  url_for('main.case_list', meeting=meeting.date)}}"> {{meeting.date_repr}}</a> </td>
+							<td> {{meeting.comment}} </td>
+							<td>
+								{% if meeting.is_cancelled == True %}
+								   Yes
+								{%  else %}
+								   No
+								{%  endif %}
+							</td>
+							<td><a href="{{  url_for('main.meeting_edit', pk=meeting.id)}}" class="btn btn-info" role="button">Edit meeting</a></td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
 {% endblock %}

@@ -42,6 +42,9 @@ Flask web application
 - Flask-Admin gives quick access to an admin page, had already set up user authentication so only the admin page aspect used
 - Flask-bootstrap made the project more lightweight as no bootstrap code was requried
 - Flask-Script made command line interaction easier for migrations running of the server and loading a console within the flask app
-- Pytest was chosen for it's limited boiler plate
-- Custom CSS and scripts are in the base.html file, aiming to have few custom styles and scripts
+- Pytest was chosen for it's limited boiler plate testing
+- Custom CSS and scripts are in the base.html file, so that all custom functions and classes are obvious
 - Datatables used for pretty tables and to allow for sorting by the user
+- jQuery-ui datapicker used as a datepicker was requested.
+    - Later founds bootstrap datepicker, probably better to use the bootstrap date picker if time allows and remove jQuery-ui from static folder
+
