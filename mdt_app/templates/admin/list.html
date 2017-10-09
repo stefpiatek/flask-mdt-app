@@ -1,0 +1,10 @@
+{% extends 'admin/model/list.html' %}
+{% block list_row scoped %}
+	<!-- Slight hack giving blank rows to allow for conditional formatting -->
+    {% if not row.is_confirmed %}
+		</tr><tr class='danger'>
+	{% else %}
+	    </tr><tr>
+	{% endif %}
+	{{ super () }}
+{% endblock %}

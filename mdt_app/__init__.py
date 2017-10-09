@@ -5,9 +5,10 @@ from flask_migrate import Migrate
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, current_user
 from flask_admin import Admin
-from flask_admin.contrib.sqla import ModelView
 
 from config import config
+from mdt_app.admin.views import (AdminModelView, CustomAdminModelView,
+                                 MyAdminIndexView)
 
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
@@ -25,9 +26,10 @@ def create_app(config_name):
     db.init_app(app)
     login_manager.init_app(app)
 
-    admin = Admin(template_mode='bootstrap3')
+    admin = Admin(template_mode='bootstrap3',
+                  index_view=MyAdminIndexView())
     admin.init_app(app)
-    admin.add_view(AdminModelView(User, db.session))
+    admin.add_view(CustomAdminModelView(User, db.session))
     admin.add_view(AdminModelView(Patient, db.session))
     admin.add_view(AdminModelView(Meeting, db.session))
     admin.add_view(AdminModelView(Case, db.session))
@@ -41,20 +43,6 @@ def create_app(config_name):
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
 
     return app
-
-
-class AdminModelView(ModelView):
-    page_size = 50  # the number of entries to display on the list view
-
-    def is_accessible(self):
-        if current_user.is_anonymous:
-            return False
-        else:
-            return current_user.is_admin
-
-    def inaccessible_callback(self, name, **kwargs):
-        return render_template('403.html')
-
 
 # placed at end to avoid circular argument
 from mdt_app.models import User, Case, Meeting, Action, Patient, Attendee
