@@ -1,10 +1,15 @@
 {% from "_form_helpers.html" import render_field, render_label, render_input %}
 
-{{ form.csrf_token }}
 {{ form.hidden_tag() }}
 <tr>
 	{{ render_field(form.meeting) }}
-	{{ render_field(form.add_meeting, class="dtpick") }}
+	<td>{{ render_label(form.add_meeting) }}</td>
+	<td>
+		<div class="input-group date">
+			{{ render_input(form.add_meeting, class="form-control") }}
+			<span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+		</div>
+	</td>	   
 </tr>
 <tr>
 	{{ render_field(form.mdt_vcmg) }}

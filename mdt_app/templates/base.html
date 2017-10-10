@@ -20,8 +20,10 @@
 		{% endblock %}
 
 		{% block styles %}
-		<link rel="stylesheet" src="{{url_for('static', filename='datatables.min.css')}}"></link>
-		<link rel="stylesheet" src="{{url_for('static', filename='fixes/ie10-viewport-bug-workaround.css')}}"></link>
+		<link rel="stylesheet" href="{{url_for('static', filename='datatables.min.css')}}"></link>
+		<link rel="stylesheet" href="{{url_for('static', filename='fixes/ie10-viewport-bug-workaround.css')}}"></link>
+		<link rel="stylesheet" href="{{url_for('static', filename='bootstrap-datepicker-1.6.4/css/bootstrap-datepicker.min.css')}}"></link>
+
 
 		<style>
 			.required {
@@ -44,9 +46,6 @@
 				background-color: #FDFDFD;
 				}
 		</style>
-		<link rel="stylesheet" type="text/css"
-			  href="{{url_for('static', filename='datatables.min.css')}}"/>
-		<link rel="stylesheet" href="{{url_for('static', filename='jquery-ui-1.12.1/themes/smoothness/jquery-ui.min.css')}}">
 		{% endblock %}
 	</head>
 
@@ -121,7 +120,7 @@
 		{% block scripts %}
 			<!-- datatables contains bootstrap3 and jquery 1.12-->
 			<script type="text/javascript" src="{{url_for('static', filename='datatables.min.js') }}"></script>
-			<script type="text/javascript" src="{{url_for('static', filename='jquery-ui-1.12.1/jquery-ui.js') }}"></script>
+			<script type="text/javascript" src="{{url_for('static', filename='bootstrap-datepicker-1.6.4/js/bootstrap-datepicker.min.js') }}"></script>
 			<script type="text/javascript" charset="utf-8">
 				$(document).ready(function(){
 					$('#datatable').dataTable({
@@ -141,14 +140,15 @@
 						"paging": false,
 						});
 					});
-				$(function() {
-					$( ".dtpick" ).datepicker({
-						dateFormat: 'dd-M-yy',
-						minDate: new Date(),
-						firstDay: 1,
-						beforeShowDay: $.datepicker.noWeekends
-						});
+				$(document).ready(function(){
+				    $('.input-group.date').datepicker({
+					    format: "dd-M-yyyy",
+					    weekStart: 1,
+					    todayBtn: "linked",
+					    daysOfWeekDisabled: "0,6",
+					    todayHighlight: true
 					});
+				});
 			<!-- use scroll='element' to load a page on a particular element-->
 			{% if scroll %}
 				document.location.hash = '#' + '{{ scroll }}';

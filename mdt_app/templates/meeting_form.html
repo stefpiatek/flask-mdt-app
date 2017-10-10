@@ -17,7 +17,14 @@
 			{{ form.csrf_token }}
 			{{ form.hidden_tag() }}
 			<table class="table">
-				<tr>{{ render_field(form.date, class="dtpick") }} </tr>
+				<tr><td>{{ render_label(form.date) }}</td>
+					<td>
+						<div class="input-group date">
+						    {{ render_input(form.date, class="form-control") }}
+						    <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+						</div>
+					</td>	   
+				</tr>
 				<tr>{{ render_field(form.comment) }}</tr>
 				<tr>{{ render_field(form.is_cancelled) }}</tr>
 				<tr><td colspan=4><input style="float:right" type="submit" value="Submit"></td></tr>

@@ -40,6 +40,7 @@ Figure 1 does contain some extra fields for data completeness.
 #### 5. Requirements for each section of the application.
   - Meetings (list, create and edit): 
     - Unique dates
+	- Ideally use datepicker to enter date
     - Cancel meetings which makes them no longer selectable and any cases are moved to the next available date. 
   - Patients (list, create and edit):
     - Patient first name, last name, unique hospital number, date of birth and sex 
@@ -49,7 +50,7 @@ Figure 1 does contain some extra fields for data completeness.
     - View cases: all or filter by meeting. If filtered by meeting, can select users who attended MDT. Show summary of case statuses and highlight rows by status
 	  - Add new case: view all previous cases for patient in the same page. No discussion or actions can be added when creating a new case.
 	  - Patient, consultant (user who has identified as consultant), clinic code and users selected from dropdown. 
-	  - Date created on and case created by to be autopopulated
+	  - Date created on and case created by to be autopopulated, ideally using a datepicker for entering the date
 	  - To edit a case during MDT, all proforma, discussion and actions to be viewable on a single page of a 15" monitor.
   - Actions (list, create and edit):
     - Create actions for each case in the Case edit form and assign a user to each action.

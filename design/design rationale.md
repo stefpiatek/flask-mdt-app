@@ -44,7 +44,8 @@ Flask web application
 - Flask-Script made command line interaction easier for migrations running of the server and loading a console within the flask app
 - Pytest was chosen for it's limited boiler plate testing
 - Custom CSS and scripts are in the base.html file, so that all custom functions and classes are obvious
-- Datatables used for pretty tables and to allow for sorting by the user
-- jQuery-ui datapicker used as a datepicker was requested.
-    - Later founds bootstrap datepicker, probably better to use the bootstrap date picker if time allows and remove jQuery-ui from static folder
+- Datatables used for pretty tables, to allow for sorting by the user and searching the tables
+- bootstrap-datapicker used as a datepicker was requested.
+    - First used jQuery-ui's datepicker and then later found a bootstrap datepicker
+	- Bootstrap-datepicker was chosen as it fits with the aesthetics and doesn't involve importing a whole UI module for one function
 
