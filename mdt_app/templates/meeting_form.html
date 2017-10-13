@@ -14,7 +14,6 @@
 	    </ul> 
 		<br>
 	    <form method="POST" action="">
-			{{ form.csrf_token }}
 			{{ form.hidden_tag() }}
 			<table class="table">
 				<tr><td>{{ render_label(form.date) }}</td>

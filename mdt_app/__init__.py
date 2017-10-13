@@ -1,3 +1,13 @@
+"""
+MDT app
+
+Creates app and sets all of the functionality of the application for users.
+manage.py creates the app using this module (with settings in config.py)
+
+Decorators and models are not blueprint specific.
+Forms and views are blueprint specific so are divided by admin, auth and main.
+"""
+
 from flask import Flask, render_template
 
 from flask_sqlalchemy import SQLAlchemy

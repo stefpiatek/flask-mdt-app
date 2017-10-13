@@ -27,7 +27,7 @@ def db(app, request):
 
     yield _db
 
-    # Finalize test here
+    # teardown
     _db.session.close()
     _db.drop_all()
 
@@ -59,6 +59,7 @@ def db_session(db):
 
     yield session
 
+    # teardown
     session.remove()
     transaction.rollback()
     connection.close()

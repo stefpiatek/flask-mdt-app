@@ -1,6 +1,6 @@
-from flask import render_template, redirect, request, url_for, flash
 from datetime import date
 
+from flask import render_template, redirect, request, url_for, flash, abort
 from flask_login import login_required, current_user
 
 from .. import db
@@ -232,7 +232,7 @@ def case_edit(patient_id=None, case_id=None):
 
     if not (patient_id and case_id):
         flash('Patient or case details not given', category='danger')
-        return render_template('404.html', title='Page does not exist')
+        return abort(404)
     patient = Patient.query.filter_by(id=patient_id).first()
     cases = (Case.query
                  .filter_by(patient_id=patient_id)
