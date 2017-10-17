@@ -106,7 +106,7 @@ def case_list():
             db.session.commit()
     elif request.method == 'POST' and attendee_form.validate_on_submit():
         # Case edit form
-        meeting.comment = attendee_form.comment.data.strip()
+        meeting.comment = attendee_form.comment.data
         form_attendees = attendee_form.user.data
         for row_attendee in attendees:
             # remove users in database that are not in form data
@@ -134,8 +134,6 @@ def case_create(patient_id=None):
 
     CaseCreateForm allows for selecting a meeting or entering one in manually
     Manually entered meeting date then creates this in the database.
-    Strips leading and trailing whitespace from large text chunks
-
 
     Request arguments:
     patient_id -- int: patient_id to filter by
@@ -146,6 +144,7 @@ def case_create(patient_id=None):
     form -- case_create form
     patient_id -- patient id
     """
+
     patient = Patient.query.filter_by(id=patient_id).first()
     cases = (Case.query
                  .filter_by(patient_id=patient_id)
@@ -181,9 +180,9 @@ def case_create(patient_id=None):
                     clinic_code=form.clinic_code.data,
                     planned_surgery=form.planned_surgery.data,
                     surgery_date=form.surgery_date.data,
-                    medical_history=form.medical_history.data.strip(),
+                    medical_history=form.medical_history.data,
                     mdt_vcmg=form.mdt_vcmg.data,
-                    question=form.question.data.strip(),
+                    question=form.question.data,
                     created_on=date.today(),
                     created_by_id=current_user.id,
                     status='TBD')
@@ -206,7 +205,6 @@ def case_edit(patient_id=None, case_id=None):
 
     CaseEditForm is an extended version of the CaseCreateForm that has
     fields for the MDT process.
-    Strips leading and trailing whitespace from large text chunks
 
     Changes status of case as appropriate:
     - If no_actions in form is ticked, completes status
@@ -283,10 +281,10 @@ def case_edit(patient_id=None, case_id=None):
         case.clinic_code = form.clinic_code.data
         case.planned_surgery = form.planned_surgery.data
         case.surgery_date = form.surgery_date.data
-        case.medical_history = form.medical_history.data.strip()
+        case.medical_history = form.medical_history.data
         case.mdt_vcmg = form.mdt_vcmg.data
-        case.question = form.question.data.strip()
-        case.discussion = form.discussion.data.strip()
+        case.question = form.question.data
+        case.discussion = form.discussion.data
         flash(('Case updated for {f_name} {l_name}'
                ).format(f_name=patient.first_name,
                         l_name=patient.last_name),
@@ -411,8 +409,6 @@ def meeting_list():
 def patient_create():
     """Create new patient entry
 
-    Whitespace stripped from text
-
     Template objects:
     title -- title
     form -- PatientForm
@@ -422,10 +418,9 @@ def patient_create():
     form = PatientForm(id=-1)
     if form.validate_on_submit():
         # Remove whitespace from either side of string fields
-        patient = Patient(hospital_number=(form.hospital_number.data.strip()
-                                                                    .upper()),
-                          first_name=form.first_name.data.strip().title(),
-                          last_name=form.last_name.data.strip().upper(),
+        patient = Patient(hospital_number=(form.hospital_number.data),
+                          first_name=form.first_name.data,
+                          last_name=form.last_name.data,
                           date_of_birth=form.date_of_birth.data,
                           sex=form.sex.data)
         db.session.add(patient)
@@ -444,8 +439,6 @@ def patient_create():
 def patient_edit(pk):
     """Edit patient entry
 
-    Strips whitespace from text fields
-
     Request arguments:
     pk -- int: patient id
 
@@ -457,9 +450,9 @@ def patient_edit(pk):
     patient = Patient.query.filter_by(id=pk).first()
     form = PatientForm(obj=patient)
     if form.validate_on_submit():
-        patient.hospital_number = form.hospital_number.data.strip().upper()
-        patient.first_name = form.first_name.data.strip().title()
-        patient.last_name = form.last_name.data.strip().upper()
+        patient.hospital_number = form.hospital_number.data
+        patient.first_name = form.first_name.data
+        patient.last_name = form.last_name.data
         patient.date_of_birth = form.date_of_birth.data
         patient.sex = form.sex.data
         db.session.commit()

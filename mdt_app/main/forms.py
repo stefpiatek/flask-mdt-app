@@ -68,11 +68,14 @@ class CaseForm(FlaskForm):
                              validators=[Optional()],
                              description=date_style['help'])
     medical_history = TextAreaField('Medical History',
-                                    validators=[DataRequired()])
+                                    validators=[DataRequired()],
+                                    filters=[lambda x: x.strip() if x
+                                             else None])
     mdt_vcmg = SelectField('MDT or VGMG',
                            choices=[('MDT', 'MDT'), ('VCMG', 'VCMG')],
                            validators=[DataRequired()])
-    question = TextAreaField('Question for MDT', validators=[DataRequired()])
+    question = TextAreaField('Question for MDT', validators=[DataRequired()],
+                             filters=[lambda x: x.strip() if x else None])
     submit = SubmitField('Submit')
 
     def validate_meeting(self, field):
@@ -96,7 +99,8 @@ class CaseForm(FlaskForm):
 
 
 class CaseEditForm(CaseForm):
-    discussion = TextAreaField('Discussion')
+    discussion = TextAreaField('Discussion',
+                               filters=[lambda x: x.strip() if x else None])
     action = StringField('Action', validators=[Length(0, 255)])
     action_to = QuerySelectField('Assigned to', query_factory=get_users,
                                   get_label='username', blank_text='---',
@@ -127,7 +131,8 @@ class AttendeeForm(FlaskForm):
                                                              ).format(x.f_name,
                                                                       x.l_name))
                                     )
-    comment = TextAreaField('Meeting comments')
+    comment = TextAreaField('Meeting comments',
+                            filters=[lambda x: x.strip() if x else None])
     submit = SubmitField('Save attendees')
 
 
@@ -135,7 +140,8 @@ class MeetingForm(FlaskForm):
     date = DateField('Date', format=date_style['format'],
                      description=date_style['help'],
                      validators=[DataRequired()])
-    comment = StringField('Comment', validators=[Length(0, 255)])
+    comment = StringField('Comment', filters=[lambda x: x.strip() if x
+                                              else None])
     is_cancelled = BooleanField('Meeting cancelled?')
     id = HiddenField('Primary key')
     submit = SubmitField('Submit')
@@ -148,11 +154,17 @@ class MeetingForm(FlaskForm):
 
 class PatientForm(FlaskForm):
     hospital_number = StringField('Hospital number',
-                                  validators=[Length(8), DataRequired()])
+                                  validators=[Length(8), DataRequired()],
+                                  filters=[lambda x: x.strip().upper() if x
+                                           else None])
     first_name = StringField('First name',
-                             validators=[Length(2, 255), DataRequired()])
+                             validators=[Length(2, 255), DataRequired()],
+                             filters=[lambda x: x.strip().title()
+                                      if x else None])
     last_name = StringField('Last name',
-                            validators=[Length(2, 255), DataRequired()])
+                            validators=[Length(2, 255), DataRequired()],
+                            filters=[lambda x: x.strip().upper() if x
+                                     else None])
     date_of_birth = DateField('Date of birth', format=date_style['format'],
                               validators=[DataRequired()],
                               description=date_style['help'])
@@ -165,15 +177,15 @@ class PatientForm(FlaskForm):
 
     def validate_hospital_number(self, field):
         existing = (Patient.query
-                           .filter_by(hospital_number=field.data.upper())
+                           .filter_by(hospital_number=field.data)
                            .first())
         if existing and int(self.id.data) != int(existing.id):
             raise ValidationError('Patient with hospital number already exists')
 
     def validate_date_of_birth(self, field):
         existing = (Patient.query
-                           .filter_by(first_name=self.first_name.data.title(),
-                                      last_name=self.last_name.data.upper(),
+                           .filter_by(first_name=self.first_name.data,
+                                      last_name=self.last_name.data,
                                       date_of_birth=field.data)
                            .first())
         if existing and int(self.id.data) != int(existing.id):
