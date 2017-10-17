@@ -1,12 +1,14 @@
 import pytest
 from datetime import datetime
+
 from pytest_flask import fixtures
+from flask_login import current_user, login_user, logout_user
 
 from mdt_app.models import User
 
 
+@pytest.mark.usefixtures('client_class', 'db_session', 'populate_db')
 class TestUserModel():
-
     def setup(self):
         self.user = User(f_name='test', l_name='user', is_confirmed=True,
                          username='testuser', email='test@user.com',
@@ -35,11 +37,9 @@ class TestUserModel():
         u = User(username='Geoff')
         assert u.__repr__() == '<User: Geoff>'
 
-    def test_db_add(self, db_session):
-        user = self.user
-        db_session.add(user)
-        db_session.commit()
+    def test_load_user(self):
+        user1 = User.query.first()
+        login_user(user1)
 
-        testuser = User.query.filter_by(username='testuser').first()
-
-        assert testuser
+        assert User.load_user(user1.id) == user1
+        assert current_user == user1
