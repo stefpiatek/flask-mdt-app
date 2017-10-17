@@ -4,6 +4,8 @@ from flask.ext.sqlalchemy import event
 
 from mdt_app import create_app
 from mdt_app import db as _db
+from mdt_app.models import *
+
 
 @pytest.yield_fixture(scope='session')
 def app(request):
@@ -63,3 +65,83 @@ def db_session(db):
     session.remove()
     transaction.rollback()
     connection.close()
+
+
+@pytest.yield_fixture(scope='class')
+def populate_db(db_session):
+    user1 = User(id=1, f_name='first', l_name='user',
+                 email='test@user.com', username='fuser',
+                 password='test_pass', is_confirmed=True)
+    user_unconfirmed = User(id=2, f_name='uncon', l_name='firmed',
+                            email='unconfirmed@user.com', username='ufirmed',
+                            password='test_pass', is_confirmed=False)
+    consult1 = User(id=3, f_name='consultant', l_name='test',
+                   email='consult@user.com', username='ctest',
+                   password='test_pass', is_confirmed=True, is_consultant=True,
+                   initials='TC')
+    consult2 = User(id=4, f_name='another', l_name='consultant',
+                   email='aconsult@user.com', username='aconsultant',
+                   password='test_pass', is_confirmed=True, is_consultant=True,
+                   initials='AC')
+    db_session.add(user1)
+    db_session.add(user_unconfirmed)
+    db_session.add(consult1)
+    db_session.add(consult2)
+
+
+    patient1 = Patient(id=1, hospital_number=12345678,
+                       first_name='Test', last_name='PATIENT',
+                       date_of_birth='1988-10-09', sex='F')
+    patient2 = Patient(id=2, hospital_number=98765432,
+                      first_name='Second', last_name='ENTRY',
+                      date_of_birth='1953-01-02', sex='M')
+    db_session.add(patient1)
+    db_session.add(patient2)
+    # App is only for use until ~2020 so will always be in the future
+    meeting1 = Meeting(id=1, date='2050-10-30')
+    meeting2 = Meeting(id=2, date='2050-10-23',
+                       comment='cancelled as no consultant',
+                       is_cancelled=True)
+    meeting3 = Meeting(id=3, date='2050-10-16')
+    past_meeting = Meeting(id=4, date='2010-11-15', comment='past')
+    db_session.add(meeting1)
+    db_session.add(meeting2)
+    db_session.add(meeting3)
+    db_session.add(past_meeting)
+
+    case1 = Case(id=1,
+                 created_by_id=1,
+                 created_on='2017-10-15',
+                 patient_id=1,
+                 meeting_id=1,
+                 consultant_id=3,
+                 medical_history='medical history here',
+                 question='question here',
+                 status='TBD')
+    case2 = Case(id=2,
+                 created_by_id=1,
+                 created_on='2017-09-15',
+                 patient_id=2,
+                 meeting_id=3,
+                 consultant_id=3,
+                 medical_history='medical history here',
+                 question='question here',
+                 status='TBD')
+    db_session.add(case1)
+    db_session.add(case2)
+
+    # continue from here
+    action1 = Action(id=1,
+                     case_id=1,
+                     action='this is something that you need to do',
+                     assigned_to_id=1)
+    action2 = Action(id=2,
+                     case_id=1,
+                     action='contact gp',
+                     assigned_to_id=1)
+    db_session.add(action1)
+    db_session.add(action2)
+
+    attendee1 = Attendee()
+
+    db_session.commit()

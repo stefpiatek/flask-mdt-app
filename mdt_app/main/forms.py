@@ -111,7 +111,7 @@ class CaseEditForm(CaseForm):
                 raise ValidationError('Actions already exist for this case')
 
     def validate_action(self, field):
-        if ((field.data and self.action_to.data) or
+        if ((field.data and self.action_to.data and self.discussion.data) or
              (not field.data and not self.action_to.data)):
             pass
         elif field.data and not self.discussion.data:
