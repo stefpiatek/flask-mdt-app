@@ -7,6 +7,17 @@ This document will cover what choices were made and options that were explored d
 - Issue 5.
   - Access to patient demographics database is not likely to be granted without incurring substantial time and cost.
 
+## To do list:
+
+- Unit tests to increase coverage
+- Audit log tables for all changes in cases, actions and attendees
+- Export case report to document (e.g. pdf)
+- Field for PA has added action to patient record
+- Email notification of being assigned an action, perhaps reminders
+- Email notification for admins that new user has registered
+- Perhaps change is_confirmed column to be called is_active in users table, consistent with flask_login defaults  
+
+  
 ## Solution types considered
 
 Access database

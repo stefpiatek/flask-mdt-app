@@ -146,7 +146,6 @@ def case_create(patient_id=None):
     form -- case_create form
     patient_id -- patient id
     """
-
     patient = Patient.query.filter_by(id=patient_id).first()
     cases = (Case.query
                  .filter_by(patient_id=patient_id)
