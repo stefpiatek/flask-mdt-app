@@ -93,10 +93,15 @@ def populate_db(db_session):
                        first_name='Test', last_name='PATIENT',
                        date_of_birth='1988-10-09', sex='F')
     patient2 = Patient(id=2, hospital_number=98765432,
-                      first_name='Second', last_name='ENTRY',
-                      date_of_birth='1953-01-02', sex='M')
+                       first_name='Second', last_name='ENTRY',
+                       date_of_birth='1953-01-02', sex='M')
+    patient3 = Patient(id=3, hospital_number=95765432,
+                       first_name='Third', last_name='DUMMY',
+                       date_of_birth='1952-10-21', sex='M')
     db_session.add(patient1)
     db_session.add(patient2)
+    db_session.add(patient3)
+
     # App is only for use until ~2020 so will always be in the future
     meeting1 = Meeting(id=1, date='2050-10-30')
     meeting2 = Meeting(id=2, date='2050-10-23',
@@ -115,22 +120,42 @@ def populate_db(db_session):
                  patient_id=1,
                  meeting_id=1,
                  consultant_id=3,
-                 medical_history='medical history here',
+                 medical_history='first case medical history here',
                  question='question here',
-                 status='TBD')
+                 status='DISC')
     case2 = Case(id=2,
                  created_by_id=1,
                  created_on='2017-09-15',
                  patient_id=2,
                  meeting_id=3,
                  consultant_id=3,
-                 medical_history='medical history here',
+                 medical_history='second case medical history here',
+                 question='question here',
+                 status='TBD')
+    case3 = Case(id=3,
+                 created_by_id=1,
+                 created_on='2017-09-16',
+                 patient_id=3,
+                 meeting_id=1,
+                 consultant_id=3,
+                 medical_history='third case medical history here',
+                 question='question here',
+                 status='TBD')
+    case4 = Case(id=4,
+                 created_by_id=1,
+                 created_on='2017-09-15',
+                 patient_id=2,
+                 meeting_id=1,
+                 consultant_id=3,
+                 medical_history='fourth',
                  question='question here',
                  status='TBD')
     db_session.add(case1)
     db_session.add(case2)
+    db_session.add(case3)
+    db_session.add(case4)
 
-    # continue from here
+
     action1 = Action(id=1,
                      case_id=1,
                      action='this is something that you need to do',

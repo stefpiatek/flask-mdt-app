@@ -104,8 +104,8 @@ def case_list():
                                         new_date=next_meeting.date_repr),
                               category='success')
             db.session.commit()
-    elif request.method == 'POST' and attendee_form.validate_on_submit():
-        # Case edit form
+    elif attendee_form and attendee_form.validate_on_submit():
+        # attendee_form not present if no filter by date
         meeting.comment = attendee_form.comment.data
         form_attendees = attendee_form.user.data
         for row_attendee in attendees:
