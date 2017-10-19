@@ -44,7 +44,7 @@ Flask web application
 - Flask web application would meet the majority of the requirements. 
     - No extra software installation by users.
     - Support can be offered by the department.
-- The project is carried out iteratively in using a waterfall model
+- The project is carried out iteratively
 
 
 ## Python modules, flask extensions, CSS and javascript
