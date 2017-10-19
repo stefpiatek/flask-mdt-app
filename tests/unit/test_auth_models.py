@@ -2,7 +2,7 @@ import pytest
 from datetime import datetime
 
 from pytest_flask import fixtures
-from flask_login import current_user, login_user, logout_user
+from flask_login import current_user, login_user
 
 from mdt_app.models import User
 

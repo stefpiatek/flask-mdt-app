@@ -34,6 +34,7 @@ class TestingConfig(Config):
     # with logged in user
     LOGIN_DISABLED = True
     WTF_CSRF_ENABLED = False
+    WTF_CSRF_METHODS = []
     TEST_SERVER_PORT = 5001
     SQLALCHEMY_DATABASE_URI = (os.environ.get('TEST_DATABASE_URL') or
                                POSTGRES_CONNECTION + 'mdt_test')
