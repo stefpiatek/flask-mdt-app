@@ -9,14 +9,24 @@ This document will cover what choices were made and options that were explored d
 
 ## To do list:
 
+Required
+
+- Set up VM for production environment
+- Augit log of tables (postgresql-audit module might make this simpler, has flask extension)
+- Export of report document of case (and all actions) - to pdf
+- LDAP login integration
+- Regular SQL dump of tables to backup location 
+- Daily table export into flat excel files (needs some requirements gathering)
+
+Useful
+
+- Change is_confirmed column to be called is_active in users table, consistent with flask_login defaults  
 - Unit tests to increase coverage
-- Audit log tables for all changes in cases, actions and attendees
-- Export case report to document (e.g. pdf)
+
+Might not be needed, leave out and then see if they are requested
+
 - Field for PA has added action to patient record
 - Email notification of being assigned an action, perhaps reminders
-- Email notification for admins that new user has registered
-- Perhaps change is_confirmed column to be called is_active in users table, consistent with flask_login defaults  
-
   
 ## Solution types considered
 
@@ -58,5 +68,5 @@ Flask web application
 - Datatables used for pretty tables, to allow for sorting by the user and searching the tables
 - bootstrap-datapicker used as a datepicker was requested.
     - First used jQuery-ui's datepicker and then later found a bootstrap datepicker
-	- Bootstrap-datepicker was chosen as it fits with the aesthetics and doesn't involve importing a whole UI module for one function
+    - Bootstrap-datepicker was chosen as it fits with the aesthetics and doesn't involve importing a whole UI module for one function
 
