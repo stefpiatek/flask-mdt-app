@@ -1,0 +1,4 @@
+mdt_app/static/*/* linguist-vendored
+mdt_app/static/*/*/* linguist-vendored
+migations/* linguist-vendored
+migations/*/* linguist-vendored
